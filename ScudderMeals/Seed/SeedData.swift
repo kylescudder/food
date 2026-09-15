@@ -173,8 +173,8 @@ private extension SeedData {
                 .init("oats", 40, "g", category: .cupboard),
                 .init("unsweetened soy milk", 200, "ml", category: .dairy),
                 .init("vegan protein powder", 15, "g", category: .cupboard),
-                .init("berries", 100, "g", category: .fruitAndVeg, note: "or ½ banana"),
-                .init("peanut butter", 7.5, "g", category: .cupboard, note: "5–10 g to taste"),
+                .init("berries", 100, "g", category: .fruitAndVeg, note: "or ½ banana per serving"),
+                .init("peanut butter", 7.5, "g", category: .cupboard, note: "5–10 g per serving, to taste"),
                 .init("cinnamon", category: .cupboard, note: "optional", pantryStaple: true)
             ],
             steps: [
@@ -200,8 +200,8 @@ private extension SeedData {
                 .init("unsweetened soy milk", 200, "ml", category: .dairy),
                 .init("vegan protein powder", 15, "g", category: .cupboard),
                 .init("chia seeds", 5, "g", category: .cupboard),
-                .init("berries", 100, "g", category: .fruitAndVeg, note: "or ½ banana"),
-                .init("peanut butter", 7.5, "g", category: .cupboard, note: "5–10 g to taste"),
+                .init("berries", 100, "g", category: .fruitAndVeg, note: "or ½ banana per serving"),
+                .init("peanut butter", 7.5, "g", category: .cupboard, note: "5–10 g per serving, to taste"),
                 .init("cinnamon", category: .cupboard, note: "optional", pantryStaple: true)
             ],
             steps: [
@@ -263,7 +263,7 @@ private extension SeedData {
                 .init("lettuce", 60, "g", category: .fruitAndVeg),
                 .init("tomato", 1, nil, category: .fruitAndVeg),
                 .init("cucumber", 0.5, nil, category: .fruitAndVeg),
-                .init("hummus", 50, "g", category: .fridge, note: "40–60 g total"),
+                .init("hummus", 50, "g", category: .fridge, note: "about 20–30 g per serving"),
                 .init("chilli sauce or salsa", category: .cupboard, note: "optional")
             ],
             steps: [
@@ -291,9 +291,9 @@ private extension SeedData {
             cookingRequired: true,
             ingredients: [
                 .init("wholewheat pasta", 300, "g", category: .cupboard),
-                .init("drained cooked lentils", 480, "g", category: .cupboard, note: "about 2 tins"),
+                .init("drained cooked lentils", 480, "g", category: .cupboard, note: "typically 240 g drained per tin"),
                 .init("TVP / dried soy mince", 150, "g", category: .cupboard),
-                .init("chopped tomatoes", 800, "g", category: .cupboard, note: "2 tins"),
+                .init("chopped tomatoes", 800, "g", category: .cupboard, note: "400 g tins"),
                 .init("tomato puree", 60, "g", category: .cupboard),
                 .init("onion", 1, nil, category: .fruitAndVeg),
                 .init("garlic", 3, "cloves", category: .fruitAndVeg),
@@ -321,10 +321,10 @@ private extension SeedData {
             tags: "Dinner,Batch cook,High protein",
             cookingRequired: true,
             ingredients: [
-                .init("drained kidney beans", 240, "g", category: .cupboard, note: "about 1 tin"),
-                .init("drained black beans", 240, "g", category: .cupboard, note: "about 1 tin"),
+                .init("drained kidney beans", 240, "g", category: .cupboard, note: "typically 240 g drained per tin"),
+                .init("drained black beans", 240, "g", category: .cupboard, note: "typically 240 g drained per tin"),
                 .init("TVP / dried soy mince", 150, "g", category: .cupboard),
-                .init("chopped tomatoes", 800, "g", category: .cupboard, note: "2 tins"),
+                .init("chopped tomatoes", 800, "g", category: .cupboard, note: "400 g tins"),
                 .init("peppers", 2, nil, category: .fruitAndVeg),
                 .init("onion", 1, nil, category: .fruitAndVeg),
                 .init("sweetcorn", 200, "g", category: .freezer),
@@ -354,7 +354,7 @@ private extension SeedData {
             ingredients: [
                 .init("tofu", 350, "g", category: .fridge),
                 .init("mixed vegetables", 400, "g", category: .fruitAndVeg),
-                .init("chopped tomatoes", 400, "g", category: .cupboard, note: "1 tin"),
+                .init("chopped tomatoes", 400, "g", category: .cupboard, note: "400 g tins"),
                 .init("light coconut milk", 100, "ml", category: .cupboard),
                 .init("basmati rice", 140, "g", category: .cupboard),
                 .init("curry paste", 2, "tbsp", category: .cupboard)
@@ -439,7 +439,7 @@ private extension SeedData {
             cookingRequired: true,
             ingredients: [
                 .init("long-grain rice", 130, "g", category: .cupboard),
-                .init("drained black beans", 240, "g", category: .cupboard, note: "about 1 tin"),
+                .init("drained black beans", 240, "g", category: .cupboard, note: "typically 240 g drained per tin"),
                 .init("tofu", 250, "g", category: .fridge),
                 .init("lettuce", 100, "g", category: .fruitAndVeg),
                 .init("tomato", 2, nil, category: .fruitAndVeg),
