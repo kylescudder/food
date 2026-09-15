@@ -1,0 +1,51 @@
+import CoreData
+import SwiftUI
+
+struct RecipesView: View {
+    @ObservedObject var household: Household
+    @FetchRequest private var recipes: FetchedResults<Recipe>
+    @State private var searchText = ""
+
+    init(household: Household) {
+        self.household = household
+        _recipes = FetchRequest(
+            sortDescriptors: [NSSortDescriptor(keyPath: \Recipe.name, ascending: true)],
+            predicate: NSPredicate(format: "household == %@", household),
+            animation: .default
+        )
+    }
+
+    var body: some View {
+        NavigationStack {
+            List(filteredRecipes, id: \.objectID) { recipe in
+                NavigationLink {
+                    RecipeDetailView(recipe: recipe)
+                } label: {
+                    VStack(alignment: .leading, spacing: 5) {
+                        Text(recipe.name ?? "Recipe")
+                            .font(.body.weight(.medium))
+                        HStack(spacing: 10) {
+                            Text("Serves \(QuantityText.format(recipe.defaultServings))")
+                            if recipe.hasProtein {
+                                Text("~\(QuantityText.format(recipe.proteinPerServing)) g protein")
+                            }
+                        }
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    }
+                    .padding(.vertical, 3)
+                }
+            }
+            .navigationTitle("Recipes")
+            .searchable(text: $searchText, prompt: "Find a recipe")
+        }
+    }
+
+    private var filteredRecipes: [Recipe] {
+        guard !searchText.isEmpty else { return Array(recipes) }
+        return recipes.filter {
+            ($0.name ?? "").localizedCaseInsensitiveContains(searchText)
+                || ($0.tags ?? "").localizedCaseInsensitiveContains(searchText)
+        }
+    }
+}
