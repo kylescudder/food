@@ -1,6 +1,6 @@
 import CoreData
 import XCTest
-@testable import ScudderMeals
+@testable import Food
 
 final class SeedDataTests: XCTestCase {
     private var persistence: PersistenceController!

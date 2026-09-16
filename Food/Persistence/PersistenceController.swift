@@ -5,7 +5,7 @@ import Foundation
 
 final class PersistenceController: ObservableObject {
     static let shared = PersistenceController()
-    static let cloudKitContainerIdentifier = "iCloud.com.scudders.meals"
+    static let cloudKitContainerIdentifier = "iCloud.com.kyle.food"
 
     enum PersistenceError: LocalizedError {
         case notReady
@@ -37,7 +37,7 @@ final class PersistenceController: ObservableObject {
     init(inMemory: Bool = false, cloudKitEnabled: Bool? = nil) {
         let launchRequestsLocalStore = ProcessInfo.processInfo.arguments.contains("-LocalStore")
         self.cloudKitEnabled = cloudKitEnabled ?? (!inMemory && !launchRequestsLocalStore)
-        container = NSPersistentCloudKitContainer(name: "ScudderMeals")
+        container = NSPersistentCloudKitContainer(name: "Food")
 
         let descriptions = Self.makeStoreDescriptions(
             inMemory: inMemory,
@@ -141,7 +141,7 @@ final class PersistenceController: ObservableObject {
 
     private func configureViewContext() {
         container.viewContext.name = "viewContext"
-        container.viewContext.transactionAuthor = "ScudderMealsApp"
+        container.viewContext.transactionAuthor = "FoodApp"
         container.viewContext.automaticallyMergesChangesFromParent = true
         container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
     }
@@ -252,7 +252,7 @@ final class PersistenceController: ObservableObject {
         }
 
         let baseURL = NSPersistentContainer.defaultDirectoryURL()
-            .appendingPathComponent("ScudderMeals", isDirectory: true)
+            .appendingPathComponent("Food", isDirectory: true)
         try? FileManager.default.createDirectory(
             at: baseURL,
             withIntermediateDirectories: true,

@@ -1,14 +1,14 @@
-# Scudder Meals
+# Food
 
-![Scudder Meals app icon](Branding/AppIcon.png)
+![Food app icon](Branding/AppIcon.png)
 
 ## What it is
 
-Scudder Meals is a small, shared household meal planner for Kyle and Rhiannon. It keeps the current week, practical vegan recipes, cooking checklists, and one shared grocery list in a native iPhone app.
+Food is a small, shared household meal planner for Kyle and Rhiannon. It keeps the current week, practical vegan recipes, cooking checklists, and one shared grocery list in a native iPhone app.
 
 The app is local-first. Normal reads and writes use Core Data’s on-device SQLite stores, so an already-downloaded household remains useful offline. Apple’s CloudKit mirroring exports and imports changes when connectivity returns. There is no external server, account system, analytics SDK, or third-party dependency.
 
-The app icon master is available at [`ScudderMeals/Resources/Brand/AppIconMaster.png`](ScudderMeals/Resources/Brand/AppIconMaster.png), with a reusable project copy at [`Branding/AppIcon.png`](Branding/AppIcon.png).
+The app icon master is available at [`Food/Resources/Brand/AppIconMaster.png`](Food/Resources/Brand/AppIconMaster.png), with a reusable project copy at [`Branding/AppIcon.png`](Branding/AppIcon.png).
 
 ## Architecture
 
@@ -36,8 +36,8 @@ The repository contains no package-manager dependencies.
 
 ## Running locally
 
-1. Open `ScudderMeals.xcodeproj` in Xcode.
-2. Select the `ScudderMeals` scheme and an iPhone simulator running iOS 18 or newer.
+1. Open `Food.xcodeproj` in Xcode.
+2. Select the `Food` scheme and an iPhone simulator running iOS 18 or newer.
 3. For a simulator run that does not require signing or iCloud, choose **Product → Scheme → Edit Scheme → Run → Arguments** and add `-LocalStore`.
 4. Build and run. Choose **Create Household**; `The Scudders` is prefilled.
 5. The 14 recipes, 21 current-week meal slots, and ten shopping categories are seeded once. Removing and reinstalling the local app resets this development data.
@@ -48,8 +48,8 @@ To run the tests in Xcode, press **⌘U**. From Terminal on a Mac, choose an ins
 
 ```sh
 xcodebuild \
-  -project ScudderMeals.xcodeproj \
-  -scheme ScudderMeals \
+  -project Food.xcodeproj \
+  -scheme Food \
   -destination 'platform=iOS Simulator,name=iPhone 16 Pro' \
   test
 ```
@@ -58,16 +58,16 @@ xcodebuild \
 
 The checked-in placeholder identifiers are:
 
-- Bundle ID: `com.scudders.mealplanner`
-- CloudKit container: `iCloud.com.scudders.meals`
+- Bundle ID: `com.kyle.food`
+- CloudKit container: `iCloud.com.kyle.food`
 
-These identifiers must be available to your Apple Developer team. If they are not, replace the CloudKit identifier in both `ScudderMeals/ScudderMeals.entitlements` and `PersistenceController.cloudKitContainerIdentifier`, then use the matching container below.
+These identifiers must be available to your Apple Developer team. If they are not, replace the CloudKit identifier in both `Food/Food.entitlements` and `PersistenceController.cloudKitContainerIdentifier`, then use the matching container below.
 
-1. Select the `ScudderMeals` target, open **Signing & Capabilities**, select your development team, and set a unique bundle identifier.
+1. Select the `Food` target, open **Signing & Capabilities**, select your development team, and set a unique bundle identifier.
 2. Add the **iCloud** capability, enable **CloudKit**, and create or select the exact CloudKit container used by the code and entitlements.
 3. Add **Push Notifications**. The checked-in entitlements contain the development `aps-environment`; Xcode and the provisioning profile control its signed value.
 4. Add **Background Modes** and enable **Remote notifications** so imports can wake the app promptly.
-5. Confirm `ScudderMeals/App/Info.plist` contains `CKSharingSupported = YES` and the `remote-notification` background mode. Both are checked in.
+5. Confirm `Food/App/Info.plist` contains `CKSharingSupported = YES` and the `remote-notification` background mode. Both are checked in.
 6. Sign in to an iCloud account on the device (and in the simulator if using CloudKit there), then run without `-LocalStore`.
 7. In a development build only, temporarily add the launch argument `-InitializeCloudKitSchema`, launch once while online, verify the success alert, then remove the argument. This calls Apple’s `initializeCloudKitSchema()` for the development environment.
 8. Open CloudKit Console, select the container’s **Development** environment, and inspect the generated record types and fields.

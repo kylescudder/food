@@ -1,7 +1,7 @@
 import SwiftUI
 
 @main
-struct ScudderMealsApp: App {
+struct FoodApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @StateObject private var persistence = PersistenceController.shared
 

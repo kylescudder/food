@@ -1,5 +1,5 @@
 import XCTest
-@testable import ScudderMeals
+@testable import Food
 
 final class RecipeServingScalerTests: XCTestCase {
     func testScalingRecipeFromTwoToThreeServings() {
