@@ -87,7 +87,7 @@ final class RecipeStep: NSManagedObject {
 }
 
 @objc(MealPlanEntry)
-final class MealPlanEntry: NSManagedObject {
+final class MealPlanEntry: NSManagedObject, Identifiable {
     @NSManaged var id: UUID?
     @NSManaged var date: Date?
     @NSManaged var mealType: String?
@@ -122,7 +122,7 @@ final class ShoppingCategory: NSManagedObject {
 }
 
 @objc(ShoppingItem)
-final class ShoppingItem: NSManagedObject {
+final class ShoppingItem: NSManagedObject, Identifiable {
     @NSManaged var id: UUID?
     @NSManaged var name: String?
     @NSManaged var quantity: Double
