@@ -37,7 +37,7 @@ struct WelcomeView: View {
                     .buttonStyle(.borderedProminent)
                     .controlSize(.large)
 
-                    Button("Join Shared Household") {
+                    Button("Join Household") {
                         showingJoinHelp = true
                     }
                     .buttonStyle(.bordered)
@@ -60,7 +60,7 @@ struct WelcomeView: View {
             .alert("Join a Household", isPresented: $showingJoinHelp) {
                 Button("OK", role: .cancel) {}
             } message: {
-                Text("Open Kyle’s iCloud invitation from Messages or Mail and tap Accept. The shared household will appear here after CloudKit finishes importing it.")
+                Text("Open the invitation you received in Messages or Mail, then tap Accept. Food will add the household automatically.")
             }
         }
     }

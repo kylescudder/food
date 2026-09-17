@@ -9,12 +9,10 @@ final class PersistenceController: ObservableObject {
 
     enum PersistenceError: LocalizedError {
         case notReady
-        case cloudKitUnavailable
 
         var errorDescription: String? {
             switch self {
             case .notReady: "The meal planner database is still loading."
-            case .cloudKitUnavailable: "CloudKit sharing is unavailable in local-store mode."
             }
         }
     }
@@ -114,7 +112,7 @@ final class PersistenceController: ObservableObject {
 
     func acceptShare(_ metadata: CKShare.Metadata) {
         guard cloudKitEnabled else {
-            publishShareStatus("Open the app without -LocalStore to accept an iCloud household share.")
+            publishShareStatus("Sharing isn’t available in this build.")
             return
         }
 
@@ -128,9 +126,12 @@ final class PersistenceController: ObservableObject {
 
         container.acceptShareInvitations(from: [metadata], into: sharedStore) { [weak self] _, error in
             if let error {
-                self?.publishShareStatus("Couldn’t join the household: \(error.localizedDescription)")
+#if DEBUG
+                print("Share acceptance failed: \(error)")
+#endif
+                self?.publishShareStatus("Couldn’t join the household. Check your connection and try again.")
             } else {
-                self?.publishShareStatus("Shared household joined.")
+                self?.publishShareStatus("Household joined.")
             }
         }
     }

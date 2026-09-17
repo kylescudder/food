@@ -66,24 +66,20 @@ struct HouseholdSettingsView: View {
             Form {
                 Section("Household") {
                     LabeledContent("Name", value: household.name ?? "Household")
-                    LabeledContent(
-                        "Storage",
-                        value: persistence.cloudKitEnabled ? "iCloud + offline" : "Local only"
-                    )
                 }
 
                 Section {
                     Button {
                         showingShare = true
                     } label: {
-                        Label("Share or Manage People", systemImage: "person.2.badge.gearshape")
+                        Label("Invite or Manage People", systemImage: "person.2.badge.gearshape")
                     }
                     .disabled(!persistence.cloudKitEnabled)
                 } footer: {
                     if persistence.cloudKitEnabled {
-                        Text("Invitations use Apple’s iCloud sharing. People you invite can edit this household.")
+                        Text("People you invite can plan meals and update the shopping list with you.")
                     } else {
-                        Text("Cloud sharing is disabled while using the -LocalStore launch argument.")
+                        Text("Sharing isn’t available in this build.")
                     }
                 }
             }

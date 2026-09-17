@@ -6,11 +6,11 @@ struct RootView: View {
 
     var body: some View {
         Group {
-            if let error = persistence.loadErrorMessage {
+            if persistence.loadErrorMessage != nil {
                 ContentUnavailableView(
-                    "Couldn’t Open Meal Planner",
+                    "Couldn’t Open Food",
                     systemImage: "externaldrive.badge.exclamationmark",
-                    description: Text(error)
+                    description: Text("Close Food and try again.")
                 )
             } else if !persistence.isReady {
                 ProgressView("Opening meal planner…")
@@ -18,7 +18,7 @@ struct RootView: View {
                 HouseholdRouterView()
             }
         }
-        .alert("iCloud", isPresented: Binding(
+        .alert("Sharing", isPresented: Binding(
             get: { persistence.shareStatusMessage != nil },
             set: { if !$0 { persistence.clearShareStatus() } }
         )) {
