@@ -65,16 +65,11 @@ struct WeekView: View {
                     }
                 }
             }
-            .navigationTitle("This Week")
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Text(weekStart.formatted(.dateTime.day().month(.abbreviated)))
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                }
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        showingHousehold = true
+        .navigationTitle("This Week")
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    showingHousehold = true
                     } label: {
                         Label("Household", systemImage: "person.2")
                     }
