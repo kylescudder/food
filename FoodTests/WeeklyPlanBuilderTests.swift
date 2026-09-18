@@ -56,6 +56,7 @@ final class WeeklyPlanBuilderTests: XCTestCase {
             defaultServings: 1,
             caloriesPerServing: 450,
             proteinPerServing: 25,
+            nutritionIsComplete: true,
             isOfficeFriendly: true,
             isBatchCook: false,
             isNew: true
@@ -196,6 +197,7 @@ final class WeeklyPlanBuilderTests: XCTestCase {
             defaultServings: defaultServings ?? (mealType == .dinner ? 2 : 1),
             caloriesPerServing: calories,
             proteinPerServing: 30,
+            nutritionIsComplete: true,
             isOfficeFriendly: officeFriendly,
             isBatchCook: isBatchCook,
             isNew: false

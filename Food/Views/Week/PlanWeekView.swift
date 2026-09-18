@@ -350,6 +350,7 @@ struct PlanWeekView: View {
             defaultServings: max(recipe.defaultServings, 1),
             caloriesPerServing: calories,
             proteinPerServing: protein,
+            nutritionIsComplete: calculation.isComplete,
             isOfficeFriendly: tagSet.contains("office") || tagSet.contains("no cook"),
             isBatchCook: recipe.defaultServings >= 4,
             isNew: false
@@ -488,6 +489,11 @@ private struct PlanMealRow: View {
                 }
                 .font(.caption)
                 .foregroundStyle(.secondary)
+                if recipe?.nutritionIsComplete == false {
+                    Text("Stored estimate — add pack values in the recipe to improve it")
+                        .font(.caption)
+                        .foregroundStyle(.orange)
+                }
                 if entry.isLeftover {
                     Text("Uses \(QuantityText.format(entry.servingsEaten)) saved servings — nothing cooked or bought twice")
                         .font(.caption)
@@ -534,6 +540,9 @@ private struct DraftRecipePickerView: View {
                                 }
                                 if let protein = recipe.proteinPerServing {
                                     Text("~\(QuantityText.format(protein)) g protein")
+                                }
+                                if !recipe.nutritionIsComplete {
+                                    Text("estimate")
                                 }
                             }
                             .font(.caption)

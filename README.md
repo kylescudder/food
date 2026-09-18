@@ -119,7 +119,7 @@ CoFID 2021 is used under the [Open Government Licence v3.0](https://www.national
 
 - Previous, current, and future weeks grouped by actual Monday–Sunday dates
 - Reviewable next-week planning from a growing recipe rotation
-- Kyle-only calorie planning target with per-serving deterministic nutrition
+- Kyle-only calorie planning target with calculated nutrition and clearly marked stored estimates
 - Six built-in, fully calculated fresh recipes plus optional on-device fresh dinner copy on supported devices
 - Explicit prepared/eaten serving counts and linked leftovers
 - Tuesday and Wednesday office-day labels

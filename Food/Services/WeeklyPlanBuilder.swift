@@ -33,6 +33,7 @@ struct PlanningRecipe: Identifiable, Equatable, Sendable {
     let defaultServings: Double
     let caloriesPerServing: Double?
     let proteinPerServing: Double?
+    let nutritionIsComplete: Bool
     let isOfficeFriendly: Bool
     let isBatchCook: Bool
     let isNew: Bool

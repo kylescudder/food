@@ -83,6 +83,7 @@ struct RecipeSuggestionDraft: Identifiable, Equatable, Sendable {
             defaultServings: defaultServings,
             caloriesPerServing: calculated.isComplete ? calculated.perServing.calories : nil,
             proteinPerServing: calculated.isComplete ? calculated.perServing.proteinGrams : nil,
+            nutritionIsComplete: calculated.isComplete,
             isOfficeFriendly: isOfficeFriendly,
             isBatchCook: isBatchCook,
             isNew: true
