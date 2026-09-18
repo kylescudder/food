@@ -2,7 +2,7 @@ import CoreData
 import Foundation
 
 enum SeedData {
-    static let currentVersion: Int16 = 1
+    static let currentVersion: Int16 = 2
 
     struct IngredientDefinition {
         let name: String
@@ -51,6 +51,17 @@ enum SeedData {
         let displayName: String?
     }
 
+    struct NutritionProfileDefinition {
+        let id: UUID
+        let displayName: String
+        let aliases: [String]
+        let sourceReference: String
+        let preparationState: String
+        let basisUnit: String
+        let calories: Double
+        let protein: Double
+    }
+
     @discardableResult
     static func seedIfNeeded(
         household: Household,
@@ -62,76 +73,99 @@ enum SeedData {
         let store = household.objectID.persistentStore
         var recipesByName: [String: Recipe] = [:]
 
-        for definition in recipes {
-            let recipe = Recipe(context: context)
-            assign(recipe, to: store, in: context)
-            recipe.id = definition.id
-            recipe.name = definition.name
-            recipe.recipeDescription = definition.description
-            recipe.defaultServings = definition.servings
-            if let calories = definition.calories { recipe.caloriesPerServing = calories }
-            if let protein = definition.protein { recipe.proteinPerServing = protein }
-            recipe.nutritionNote = definition.calories == nil && definition.protein == nil
-                ? "Nutrition varies by the products and portions chosen."
-                : "Approximate estimate per serving from typical ingredient values; check product labels."
-            recipe.tags = definition.tags
-            recipe.cookingRequired = definition.cookingRequired
-            recipe.household = household
+        if household.seedVersion < 1 {
+            for definition in recipes {
+                let recipe = Recipe(context: context)
+                assign(recipe, to: store, in: context)
+                recipe.id = definition.id
+                recipe.name = definition.name
+                recipe.recipeDescription = definition.description
+                recipe.defaultServings = definition.servings
+                if let calories = definition.calories { recipe.caloriesPerServing = calories }
+                if let protein = definition.protein { recipe.proteinPerServing = protein }
+                recipe.nutritionNote = definition.calories == nil && definition.protein == nil
+                    ? "Nutrition varies by the products and portions chosen."
+                    : "Approximate estimate per serving from typical ingredient values; check product labels."
+                recipe.tags = definition.tags
+                recipe.cookingRequired = definition.cookingRequired
+                recipe.createdAt = household.createdAt ?? .now
+                recipe.isGenerated = false
+                recipe.isInRotation = true
+                recipe.household = household
 
-            for (index, ingredientDefinition) in definition.ingredients.enumerated() {
-                let ingredient = RecipeIngredient(context: context)
-                assign(ingredient, to: store, in: context)
-                ingredient.id = UUID()
-                ingredient.name = ingredientDefinition.name
-                if let amount = ingredientDefinition.amount { ingredient.amount = amount }
-                ingredient.unit = ingredientDefinition.unit
-                ingredient.note = ingredientDefinition.note
-                ingredient.sortOrder = Int16(index)
-                ingredient.categoryName = ingredientDefinition.category.rawValue
-                ingredient.isPantryStaple = ingredientDefinition.pantryStaple
-                ingredient.recipe = recipe
+                for (index, ingredientDefinition) in definition.ingredients.enumerated() {
+                    let ingredient = RecipeIngredient(context: context)
+                    assign(ingredient, to: store, in: context)
+                    ingredient.id = UUID()
+                    ingredient.name = ingredientDefinition.name
+                    if let amount = ingredientDefinition.amount { ingredient.amount = amount }
+                    ingredient.unit = ingredientDefinition.unit
+                    ingredient.note = ingredientDefinition.note
+                    ingredient.sortOrder = Int16(index)
+                    ingredient.categoryName = ingredientDefinition.category.rawValue
+                    ingredient.isPantryStaple = ingredientDefinition.pantryStaple
+                    ingredient.recipe = recipe
+                }
+
+                for (index, instruction) in definition.steps.enumerated() {
+                    let step = RecipeStep(context: context)
+                    assign(step, to: store, in: context)
+                    step.id = UUID()
+                    step.instruction = instruction
+                    step.sortOrder = Int16(index)
+                    step.recipe = recipe
+                }
+                recipesByName[definition.name] = recipe
             }
 
-            for (index, instruction) in definition.steps.enumerated() {
-                let step = RecipeStep(context: context)
-                assign(step, to: store, in: context)
-                step.id = UUID()
-                step.instruction = instruction
-                step.sortOrder = Int16(index)
-                step.recipe = recipe
+            for (index, categoryName) in ShoppingCategoryName.allCases.enumerated() {
+                let category = ShoppingCategory(context: context)
+                assign(category, to: store, in: context)
+                category.id = UUID()
+                category.name = categoryName.rawValue
+                category.sortOrder = Int16(index)
+                category.household = household
             }
-            recipesByName[definition.name] = recipe
+
+            let weekStart = WeekCalendar.weekStart(containing: date)
+            for definition in plan {
+                guard let recipe = recipesByName[definition.recipeName] else {
+                    throw SeedError.missingRecipe(definition.recipeName)
+                }
+                let entry = MealPlanEntry(context: context)
+                assign(entry, to: store, in: context)
+                entry.id = UUID()
+                entry.date = WeekCalendar.calendar.date(
+                    byAdding: .day,
+                    value: definition.dayOffset,
+                    to: weekStart
+                )
+                entry.mealType = definition.mealType.rawValue
+                entry.plannedServings = definition.servings
+                entry.isLeftover = definition.isLeftover
+                entry.displayNameOverride = definition.displayName
+                entry.isOfficeDay = definition.dayOffset == 1 || definition.dayOffset == 2
+                entry.recipe = recipe
+                entry.household = household
+            }
         }
 
-        for (index, categoryName) in ShoppingCategoryName.allCases.enumerated() {
-            let category = ShoppingCategory(context: context)
-            assign(category, to: store, in: context)
-            category.id = UUID()
-            category.name = categoryName.rawValue
-            category.sortOrder = Int16(index)
-            category.household = household
+        if recipesByName.isEmpty {
+            let request = Recipe.fetchRequest()
+            request.predicate = NSPredicate(format: "household == %@", household)
+            for recipe in try context.fetch(request) {
+                if let name = recipe.name { recipesByName[name] = recipe }
+            }
         }
 
-        let weekStart = WeekCalendar.weekStart(containing: date)
-        for definition in plan {
-            guard let recipe = recipesByName[definition.recipeName] else {
-                throw SeedError.missingRecipe(definition.recipeName)
-            }
-            let entry = MealPlanEntry(context: context)
-            assign(entry, to: store, in: context)
-            entry.id = UUID()
-            entry.date = WeekCalendar.calendar.date(
-                byAdding: .day,
-                value: definition.dayOffset,
-                to: weekStart
+        if household.seedVersion < 2 {
+            seedNutritionProfiles(
+                household: household,
+                recipes: Array(recipesByName.values),
+                store: store,
+                in: context
             )
-            entry.mealType = definition.mealType.rawValue
-            entry.plannedServings = definition.servings
-            entry.isLeftover = definition.isLeftover
-            entry.displayNameOverride = definition.displayName
-            entry.isOfficeDay = definition.dayOffset == 1 || definition.dayOffset == 2
-            entry.recipe = recipe
-            entry.household = household
+            try migrateMealPlanEntries(household: household, in: context)
         }
 
         household.seedVersion = currentVersion
@@ -147,6 +181,86 @@ enum SeedData {
         if let store { context.assign(object, to: store) }
     }
 
+    private static func seedNutritionProfiles(
+        household: Household,
+        recipes: [Recipe],
+        store: NSPersistentStore?,
+        in context: NSManagedObjectContext
+    ) {
+        var profilesByAlias: [String: FoodNutritionProfile] = [:]
+
+        for definition in nutritionProfiles {
+            let profile = FoodNutritionProfile(context: context)
+            assign(profile, to: store, in: context)
+            profile.id = definition.id
+            profile.displayName = definition.displayName
+            profile.sourceKind = "CoFID"
+            profile.sourceReference = definition.sourceReference
+            profile.sourceVersion = "2021"
+            profile.preparationState = definition.preparationState
+            profile.basisQuantity = 100
+            profile.basisUnit = definition.basisUnit
+            profile.energyKcal = definition.calories
+            profile.proteinG = definition.protein
+            profile.household = household
+            for alias in definition.aliases + [definition.displayName] {
+                profilesByAlias[normalized(alias)] = profile
+            }
+        }
+
+        for recipe in recipes {
+            recipe.createdAt = recipe.createdAt ?? household.createdAt ?? .now
+            recipe.isInRotation = true
+            for ingredient in recipe.sortedIngredients {
+                let key = normalized(ingredient.name ?? "")
+                ingredient.nutritionProfile = profilesByAlias[key]
+                if ingredient.hasAmount {
+                    ingredient.nutritionAmount = ingredient.amount
+                    ingredient.nutritionUnit = ingredient.unit
+                }
+                if ingredient.isPantryStaple && !ingredient.hasAmount {
+                    ingredient.excludeFromNutrition = true
+                }
+                if key == normalized("large wholemeal wraps") {
+                    ingredient.gramsPerUnit = 70
+                    ingredient.nutritionUnit = "item"
+                }
+            }
+        }
+    }
+
+    private static func migrateMealPlanEntries(
+        household: Household,
+        in context: NSManagedObjectContext
+    ) throws {
+        let request = MealPlanEntry.fetchRequest()
+        request.predicate = NSPredicate(format: "household == %@", household)
+        let entries = try context.fetch(request)
+
+        for entry in entries {
+            if entry.isLeftover {
+                entry.servingsPrepared = 0
+                entry.servingsEaten = max(entry.plannedServings, 1)
+                entry.leftoverSource = entries
+                    .filter {
+                        !$0.isLeftover
+                            && $0.recipe == entry.recipe
+                            && ($0.date ?? .distantFuture) < (entry.date ?? .distantPast)
+                    }
+                    .max { ($0.date ?? .distantPast) < ($1.date ?? .distantPast) }
+            } else {
+                entry.servingsPrepared = max(entry.plannedServings, 1)
+                entry.servingsEaten = entry.mealType == MealType.dinner.rawValue
+                    ? min(2, entry.servingsPrepared)
+                    : 1
+            }
+        }
+    }
+
+    private static func normalized(_ value: String) -> String {
+        value.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+    }
+
     enum SeedError: LocalizedError {
         case missingRecipe(String)
 
@@ -159,6 +273,35 @@ enum SeedData {
 }
 
 private extension SeedData {
+    static let nutritionProfiles: [NutritionProfileDefinition] = [
+        .init(id: UUID(uuidString: "B1000000-0000-0000-0000-000000000001")!, displayName: "Porridge oats", aliases: ["oats"], sourceReference: "11-788", preparationState: "dry", basisUnit: "g", calories: 381, protein: 10.9),
+        .init(id: UUID(uuidString: "B1000000-0000-0000-0000-000000000002")!, displayName: "Tofu", aliases: ["tofu", "shawarma-marinated tofu"], sourceReference: "13-570", preparationState: "steamed", basisUnit: "g", calories: 73, protein: 8.1),
+        .init(id: UUID(uuidString: "B1000000-0000-0000-0000-000000000003")!, displayName: "Chickpeas", aliases: ["drained chickpeas"], sourceReference: "13-670", preparationState: "canned, drained", basisUnit: "g", calories: 129, protein: 8.4),
+        .init(id: UUID(uuidString: "B1000000-0000-0000-0000-000000000004")!, displayName: "Kidney beans", aliases: ["drained kidney beans"], sourceReference: "13-660", preparationState: "canned, drained", basisUnit: "g", calories: 100, protein: 8.6),
+        .init(id: UUID(uuidString: "B1000000-0000-0000-0000-000000000005")!, displayName: "Lentils", aliases: ["drained cooked lentils"], sourceReference: "13-661", preparationState: "boiled", basisUnit: "g", calories: 92, protein: 7.8),
+        .init(id: UUID(uuidString: "B1000000-0000-0000-0000-000000000006")!, displayName: "Chopped tomatoes", aliases: ["chopped tomatoes"], sourceReference: "13-530", preparationState: "canned", basisUnit: "g", calories: 19, protein: 1.1),
+        .init(id: UUID(uuidString: "B1000000-0000-0000-0000-000000000007")!, displayName: "Tomato puree", aliases: ["tomato puree"], sourceReference: "13-531", preparationState: "as sold", basisUnit: "g", calories: 67, protein: 4.4),
+        .init(id: UUID(uuidString: "B1000000-0000-0000-0000-000000000008")!, displayName: "Basmati rice", aliases: ["basmati rice"], sourceReference: "11-857", preparationState: "raw", basisUnit: "g", calories: 351, protein: 8.1),
+        .init(id: UUID(uuidString: "B1000000-0000-0000-0000-000000000009")!, displayName: "Long-grain rice", aliases: ["long-grain rice"], sourceReference: "11-861", preparationState: "raw", basisUnit: "g", calories: 355, protein: 6.7),
+        .init(id: UUID(uuidString: "B1000000-0000-0000-0000-00000000000A")!, displayName: "Wholewheat pasta", aliases: ["wholewheat pasta"], sourceReference: "11-718", preparationState: "dry", basisUnit: "g", calories: 329, protein: 12.6),
+        .init(id: UUID(uuidString: "B1000000-0000-0000-0000-00000000000B")!, displayName: "Houmous", aliases: ["hummus"], sourceReference: "13-556", preparationState: "as sold", basisUnit: "g", calories: 307, protein: 6.8),
+        .init(id: UUID(uuidString: "B1000000-0000-0000-0000-00000000000C")!, displayName: "Peanut butter", aliases: ["peanut butter"], sourceReference: "14-892", preparationState: "as sold", basisUnit: "g", calories: 607, protein: 22.8),
+        .init(id: UUID(uuidString: "B1000000-0000-0000-0000-00000000000D")!, displayName: "Onion", aliases: ["onion", "red onion"], sourceReference: "13-499", preparationState: "raw", basisUnit: "g", calories: 35, protein: 1),
+        .init(id: UUID(uuidString: "B1000000-0000-0000-0000-00000000000E")!, displayName: "Green pepper", aliases: ["green pepper", "peppers"], sourceReference: "13-318", preparationState: "raw", basisUnit: "g", calories: 15, protein: 0.8),
+        .init(id: UUID(uuidString: "B1000000-0000-0000-0000-00000000000F")!, displayName: "Mushrooms", aliases: ["mushrooms"], sourceReference: "13-505", preparationState: "raw", basisUnit: "g", calories: 7, protein: 1),
+        .init(id: UUID(uuidString: "B1000000-0000-0000-0000-000000000010")!, displayName: "Spinach", aliases: ["spinach"], sourceReference: "13-521", preparationState: "raw", basisUnit: "g", calories: 16, protein: 2.6),
+        .init(id: UUID(uuidString: "B1000000-0000-0000-0000-000000000011")!, displayName: "Sweetcorn", aliases: ["sweetcorn"], sourceReference: "13-529", preparationState: "canned, drained", basisUnit: "g", calories: 78, protein: 2.6),
+        .init(id: UUID(uuidString: "B1000000-0000-0000-0000-000000000012")!, displayName: "Potatoes", aliases: ["potatoes"], sourceReference: "13-489", preparationState: "raw", basisUnit: "g", calories: 82, protein: 1.9),
+        .init(id: UUID(uuidString: "B1000000-0000-0000-0000-000000000013")!, displayName: "Wheat tortilla", aliases: ["large wholemeal wraps"], sourceReference: "11-925", preparationState: "as sold", basisUnit: "g", calories: 285, protein: 7.8),
+        .init(id: UUID(uuidString: "B1000000-0000-0000-0000-000000000014")!, displayName: "Wholemeal bread", aliases: ["wholemeal bread"], sourceReference: "11-981", preparationState: "as sold", basisUnit: "g", calories: 217, protein: 9.4),
+        .init(id: UUID(uuidString: "B1000000-0000-0000-0000-000000000015")!, displayName: "Avocado", aliases: ["avocado"], sourceReference: "14-386", preparationState: "flesh only", basisUnit: "g", calories: 171, protein: 1.8),
+        .init(id: UUID(uuidString: "B1000000-0000-0000-0000-000000000016")!, displayName: "Carrots", aliases: ["carrots"], sourceReference: "13-496", preparationState: "raw", basisUnit: "g", calories: 34, protein: 0.5),
+        .init(id: UUID(uuidString: "B1000000-0000-0000-0000-000000000017")!, displayName: "Cucumber", aliases: ["cucumber"], sourceReference: "13-523", preparationState: "raw", basisUnit: "g", calories: 14, protein: 1),
+        .init(id: UUID(uuidString: "B1000000-0000-0000-0000-000000000018")!, displayName: "Lettuce", aliases: ["lettuce", "salad leaves"], sourceReference: "13-520", preparationState: "raw", basisUnit: "g", calories: 11, protein: 1.2),
+        .init(id: UUID(uuidString: "B1000000-0000-0000-0000-000000000019")!, displayName: "Blueberries", aliases: ["berries"], sourceReference: "14-325", preparationState: "raw", basisUnit: "g", calories: 40, protein: 0.9),
+        .init(id: UUID(uuidString: "B1000000-0000-0000-0000-00000000001A")!, displayName: "Rapeseed oil", aliases: ["cooking oil"], sourceReference: "17-041", preparationState: "as sold", basisUnit: "g", calories: 899, protein: 0)
+    ]
+
     static let recipes: [RecipeDefinition] = [
         RecipeDefinition(
             id: UUID(uuidString: "A1000000-0000-0000-0000-000000000001")!,

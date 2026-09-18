@@ -33,6 +33,13 @@
 		B00000000000000000000018 /* NutritionCalculatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000023 /* NutritionCalculatorTests.swift */; };
 		B00000000000000000000019 /* WeeklyPlanBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000024 /* WeeklyPlanBuilder.swift */; };
 		B0000000000000000000001A /* WeeklyPlanBuilderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000025 /* WeeklyPlanBuilderTests.swift */; };
+		B0000000000000000000001B /* RecipeSuggestionCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000026 /* RecipeSuggestionCatalog.swift */; };
+		B0000000000000000000001C /* RecipeSuggestionCatalogTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000027 /* RecipeSuggestionCatalogTests.swift */; };
+		B0000000000000000000001D /* PlanPersistenceService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000028 /* PlanPersistenceService.swift */; };
+		B0000000000000000000001E /* PlanPersistenceServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000029 /* PlanPersistenceServiceTests.swift */; };
+		B0000000000000000000001F /* FreshRecipeSuggester.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000002A /* FreshRecipeSuggester.swift */; };
+		B00000000000000000000020 /* PlanWeekView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000002B /* PlanWeekView.swift */; };
+		B00000000000000000000021 /* NutritionProfileEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000002C /* NutritionProfileEditor.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -76,6 +83,13 @@
 		F00000000000000000000023 /* NutritionCalculatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NutritionCalculatorTests.swift; sourceTree = "<group>"; };
 		F00000000000000000000024 /* WeeklyPlanBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeeklyPlanBuilder.swift; sourceTree = "<group>"; };
 		F00000000000000000000025 /* WeeklyPlanBuilderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeeklyPlanBuilderTests.swift; sourceTree = "<group>"; };
+		F00000000000000000000026 /* RecipeSuggestionCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeSuggestionCatalog.swift; sourceTree = "<group>"; };
+		F00000000000000000000027 /* RecipeSuggestionCatalogTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeSuggestionCatalogTests.swift; sourceTree = "<group>"; };
+		F00000000000000000000028 /* PlanPersistenceService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlanPersistenceService.swift; sourceTree = "<group>"; };
+		F00000000000000000000029 /* PlanPersistenceServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlanPersistenceServiceTests.swift; sourceTree = "<group>"; };
+		F0000000000000000000002A /* FreshRecipeSuggester.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FreshRecipeSuggester.swift; sourceTree = "<group>"; };
+		F0000000000000000000002B /* PlanWeekView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlanWeekView.swift; sourceTree = "<group>"; };
+		F0000000000000000000002C /* NutritionProfileEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NutritionProfileEditor.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -117,6 +131,8 @@
 				F00000000000000000000018 /* SeedDataTests.swift */,
 				F00000000000000000000023 /* NutritionCalculatorTests.swift */,
 				F00000000000000000000025 /* WeeklyPlanBuilderTests.swift */,
+				F00000000000000000000027 /* RecipeSuggestionCatalogTests.swift */,
+				F00000000000000000000029 /* PlanPersistenceServiceTests.swift */,
 			);
 			path = FoodTests;
 			sourceTree = "<group>";
@@ -131,7 +147,7 @@
 		A00000000000000000000041 /* Models */ = {isa = PBXGroup; children = (F00000000000000000000003, F00000000000000000000004); path = Models; sourceTree = "<group>"; };
 		A00000000000000000000042 /* Persistence */ = {isa = PBXGroup; children = (F00000000000000000000005); path = Persistence; sourceTree = "<group>"; };
 		A00000000000000000000043 /* Seed */ = {isa = PBXGroup; children = (F00000000000000000000006); path = Seed; sourceTree = "<group>"; };
-		A00000000000000000000044 /* Services */ = {isa = PBXGroup; children = (F00000000000000000000007, F00000000000000000000008, F00000000000000000000022, F00000000000000000000024); path = Services; sourceTree = "<group>"; };
+		A00000000000000000000044 /* Services */ = {isa = PBXGroup; children = (F00000000000000000000007, F00000000000000000000008, F00000000000000000000022, F00000000000000000000024, F00000000000000000000026, F00000000000000000000028, F0000000000000000000002A); path = Services; sourceTree = "<group>"; };
 		A00000000000000000000045 /* Views */ = {
 			isa = PBXGroup;
 			children = (
@@ -147,8 +163,8 @@
 		};
 		A00000000000000000000046 /* Resources */ = {isa = PBXGroup; children = (F00000000000000000000012); path = Resources; sourceTree = "<group>"; };
 		A00000000000000000000050 /* Setup */ = {isa = PBXGroup; children = (F0000000000000000000000A); path = Setup; sourceTree = "<group>"; };
-		A00000000000000000000051 /* Week */ = {isa = PBXGroup; children = (F0000000000000000000000B); path = Week; sourceTree = "<group>"; };
-		A00000000000000000000052 /* Recipes */ = {isa = PBXGroup; children = (F0000000000000000000000C, F0000000000000000000000D); path = Recipes; sourceTree = "<group>"; };
+		A00000000000000000000051 /* Week */ = {isa = PBXGroup; children = (F0000000000000000000000B, F0000000000000000000002B); path = Week; sourceTree = "<group>"; };
+		A00000000000000000000052 /* Recipes */ = {isa = PBXGroup; children = (F0000000000000000000000C, F0000000000000000000000D, F0000000000000000000002C); path = Recipes; sourceTree = "<group>"; };
 		A00000000000000000000053 /* Shopping */ = {isa = PBXGroup; children = (F0000000000000000000000E, F0000000000000000000000F, F00000000000000000000010); path = Shopping; sourceTree = "<group>"; };
 		A00000000000000000000054 /* Sharing */ = {isa = PBXGroup; children = (F00000000000000000000011); path = Sharing; sourceTree = "<group>"; };
 /* End PBXGroup section */
@@ -221,6 +237,11 @@
 				B00000000000000000000010, B00000000000000000000011,
 				B00000000000000000000017 /* NutritionCalculator.swift in Sources */,
 				B00000000000000000000019 /* WeeklyPlanBuilder.swift in Sources */,
+				B0000000000000000000001B /* RecipeSuggestionCatalog.swift in Sources */,
+				B0000000000000000000001D /* PlanPersistenceService.swift in Sources */,
+				B0000000000000000000001F /* FreshRecipeSuggester.swift in Sources */,
+				B00000000000000000000020 /* PlanWeekView.swift in Sources */,
+				B00000000000000000000021 /* NutritionProfileEditor.swift in Sources */,
 				B00000000000000000000013 /* Food.xcdatamodeld in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -228,7 +249,7 @@
 		A00000000000000000000023 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
-			files = (B00000000000000000000014, B00000000000000000000015, B00000000000000000000016, B00000000000000000000018, B0000000000000000000001A);
+			files = (B00000000000000000000014, B00000000000000000000015, B00000000000000000000016, B00000000000000000000018, B0000000000000000000001A, B0000000000000000000001C, B0000000000000000000001E);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */

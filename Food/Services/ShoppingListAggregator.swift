@@ -60,9 +60,13 @@ enum ShoppingListAggregator {
 
     static func ingredients(from entries: [MealPlanEntry]) -> [PlannedIngredient] {
         entries.flatMap { entry -> [PlannedIngredient] in
-            guard !entry.isLeftover, let recipe = entry.recipe else { return [] }
+            guard let recipe = entry.recipe else { return [] }
+            if entry.isLeftover, entry.leftoverSource != nil { return [] }
             let denominator = max(recipe.defaultServings, 1)
-            let scale = max(entry.plannedServings, 1) / denominator
+            let servings = entry.isLeftover
+                ? entry.effectiveServingsEaten
+                : entry.effectiveServingsPrepared
+            let scale = servings / denominator
 
             return recipe.sortedIngredients.map { ingredient in
                 PlannedIngredient(

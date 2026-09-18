@@ -18,6 +18,13 @@ struct RecipesView: View {
     var body: some View {
         NavigationStack {
             List(filteredRecipes, id: \.objectID) { recipe in
+                let calculation = NutritionCalculator.calculate(recipe: recipe)
+                let calories = calculation.isComplete
+                    ? calculation.perServing.calories
+                    : (recipe.hasCalories ? recipe.caloriesPerServing : nil)
+                let protein = calculation.isComplete
+                    ? calculation.perServing.proteinGrams
+                    : (recipe.hasProtein ? recipe.proteinPerServing : nil)
                 NavigationLink {
                     RecipeDetailView(recipe: recipe)
                 } label: {
@@ -26,8 +33,11 @@ struct RecipesView: View {
                             .font(.body.weight(.medium))
                         HStack(spacing: 10) {
                             Text("Serves \(QuantityText.format(recipe.defaultServings))")
-                            if recipe.hasProtein {
-                                Text("~\(QuantityText.format(recipe.proteinPerServing)) g protein")
+                            if let calories {
+                                Text("~\(QuantityText.format(calories)) kcal")
+                            }
+                            if let protein {
+                                Text("~\(QuantityText.format(protein)) g protein")
                             }
                         }
                         .font(.caption)

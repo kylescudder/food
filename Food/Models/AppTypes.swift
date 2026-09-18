@@ -9,7 +9,7 @@ enum MealType: String, CaseIterable, Hashable, Identifiable, Sendable {
     var sortOrder: Int { Self.allCases.firstIndex(of: self) ?? 0 }
 }
 
-enum ShoppingCategoryName: String, CaseIterable, Identifiable {
+enum ShoppingCategoryName: String, CaseIterable, Identifiable, Sendable {
     case dairy = "Dairy"
     case fridge = "Fridge"
     case fruitAndVeg = "Fruit & Veg"

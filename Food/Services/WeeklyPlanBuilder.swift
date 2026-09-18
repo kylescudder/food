@@ -1,5 +1,31 @@
 import Foundation
 
+struct MealCalorieBudget: Equatable, Sendable {
+    let dailyTarget: Double
+    let unplannedReserve: Double
+
+    var plannedCalories: Double {
+        max(dailyTarget - unplannedReserve, 0)
+    }
+
+    func target(for mealType: MealType) -> Double {
+        let share: Double
+        switch mealType {
+        case .breakfast: share = 0.25
+        case .lunch: share = 0.30
+        case .dinner: share = 0.45
+        }
+        return plannedCalories * share
+    }
+
+    var ranges: [MealType: ClosedRange<Double>] {
+        Dictionary(uniqueKeysWithValues: MealType.allCases.map { mealType in
+            let mealTarget = target(for: mealType)
+            return (mealType, (mealTarget * 0.75)...mealTarget)
+        })
+    }
+}
+
 struct PlanningRecipe: Identifiable, Equatable, Sendable {
     let id: UUID
     let name: String
@@ -48,6 +74,7 @@ struct WeeklyPlanDraftEntry: Identifiable, Equatable, Sendable {
     let leftoverSourceID: UUID?
     let servingsPrepared: Double
     let servingsEaten: Double
+    let isOfficeDay: Bool
 }
 
 struct WeeklyPlanDraft: Equatable, Sendable {
@@ -90,7 +117,8 @@ enum WeeklyPlanBuilder {
                         isLeftover: true,
                         leftoverSourceID: source.id,
                         servingsPrepared: 0,
-                        servingsEaten: remaining
+                        servingsEaten: remaining,
+                        isOfficeDay: isOfficeDay
                     ))
                     continue
                 }
@@ -102,7 +130,13 @@ enum WeeklyPlanBuilder {
                     recipes: recipes,
                     preferences: preferences
                 )
-                guard let recipe = choose(candidates, usage: usage, history: history) else { continue }
+                guard let recipe = choose(
+                    candidates,
+                    usage: usage,
+                    history: history,
+                    recentlyUsedRecipeIDs: preferences.recentlyUsedRecipeIDs,
+                    calorieRange: preferences.calorieRanges[mealType]
+                ) else { continue }
                 usage[recipe.id, default: 0] += 1
 
                 let entry = WeeklyPlanDraftEntry(
@@ -115,7 +149,8 @@ enum WeeklyPlanBuilder {
                     isLeftover: false,
                     leftoverSourceID: nil,
                     servingsPrepared: recipe.defaultServings,
-                    servingsEaten: mealType == .dinner ? min(2, recipe.defaultServings) : 1
+                    servingsEaten: mealType == .dinner ? min(2, recipe.defaultServings) : 1,
+                    isOfficeDay: isOfficeDay
                 )
                 entries.append(entry)
 
@@ -139,15 +174,6 @@ enum WeeklyPlanBuilder {
         preferences: WeeklyPlanPreferences
     ) -> [PlanningRecipe] {
         var matches = recipes.filter { $0.mealTypes.contains(mealType) }
-        let notRecent = matches.filter { !preferences.recentlyUsedRecipeIDs.contains($0.id) }
-        if !notRecent.isEmpty { matches = notRecent }
-        if let range = preferences.calorieRanges[mealType] {
-            let withinRange = matches.filter {
-                guard let calories = $0.caloriesPerServing else { return false }
-                return range.contains(calories)
-            }
-            if !withinRange.isEmpty { matches = withinRange }
-        }
         if officeDay, mealType != .dinner {
             let portable = matches.filter(\.isOfficeFriendly)
             if !portable.isEmpty { matches = portable }
@@ -156,21 +182,54 @@ enum WeeklyPlanBuilder {
             let preferred = matches.filter { $0.isBatchCook == batchCookingDay }
             if !preferred.isEmpty { matches = preferred }
         }
+        if let range = preferences.calorieRanges[mealType] {
+            let withinRange = matches.filter {
+                guard let calories = $0.caloriesPerServing else { return false }
+                return range.contains(calories)
+            }
+            if !withinRange.isEmpty { matches = withinRange }
+        }
         return matches.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
     }
 
     private static func choose(
         _ candidates: [PlanningRecipe],
         usage: [UUID: Int],
-        history: [PlanningHistoryEntry]
+        history: [PlanningHistoryEntry],
+        recentlyUsedRecipeIDs: Set<UUID>,
+        calorieRange: ClosedRange<Double>?
     ) -> PlanningRecipe? {
         candidates.min { lhs, rhs in
-            let lhsScore = (usage[lhs.id, default: 0], mostRecentUse(lhs.id, in: history))
-            let rhsScore = (usage[rhs.id, default: 0], mostRecentUse(rhs.id, in: history))
+            let lhsScore = (
+                usage[lhs.id, default: 0],
+                recentlyUsedRecipeIDs.contains(lhs.id) ? 1 : 0,
+                calorieDistance(lhs, from: calorieRange),
+                lhs.isNew ? 0 : 1,
+                mostRecentUse(lhs.id, in: history)
+            )
+            let rhsScore = (
+                usage[rhs.id, default: 0],
+                recentlyUsedRecipeIDs.contains(rhs.id) ? 1 : 0,
+                calorieDistance(rhs, from: calorieRange),
+                rhs.isNew ? 0 : 1,
+                mostRecentUse(rhs.id, in: history)
+            )
             if lhsScore.0 != rhsScore.0 { return lhsScore.0 < rhsScore.0 }
             if lhsScore.1 != rhsScore.1 { return lhsScore.1 < rhsScore.1 }
+            if lhsScore.2 != rhsScore.2 { return lhsScore.2 < rhsScore.2 }
+            if lhsScore.3 != rhsScore.3 { return lhsScore.3 < rhsScore.3 }
+            if lhsScore.4 != rhsScore.4 { return lhsScore.4 < rhsScore.4 }
             return lhs.name.localizedCaseInsensitiveCompare(rhs.name) == .orderedAscending
         }
+    }
+
+    private static func calorieDistance(
+        _ recipe: PlanningRecipe,
+        from range: ClosedRange<Double>?
+    ) -> Double {
+        guard let calories = recipe.caloriesPerServing, let range else { return .greatestFiniteMagnitude }
+        let target = range.upperBound
+        return abs(calories - target)
     }
 
     private static func mostRecentUse(_ recipeID: UUID, in history: [PlanningHistoryEntry]) -> Date {

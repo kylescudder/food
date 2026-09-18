@@ -2,6 +2,17 @@ import XCTest
 @testable import Food
 
 final class WeeklyPlanBuilderTests: XCTestCase {
+    func testCalorieBudgetLeavesRoomForUnplannedFoodAndAllocatesTheRest() {
+        let budget = MealCalorieBudget(dailyTarget: 2_000, unplannedReserve: 200)
+
+        XCTAssertEqual(budget.plannedCalories, 1_800)
+        XCTAssertEqual(budget.target(for: .breakfast), 450)
+        XCTAssertEqual(budget.target(for: .lunch), 540)
+        XCTAssertEqual(budget.target(for: .dinner), 810)
+        XCTAssertEqual(budget.ranges.values.map(\.lowerBound).reduce(0, +), 1_350)
+        XCTAssertEqual(budget.ranges.values.map(\.upperBound).reduce(0, +), 1_800)
+    }
+
     func testBuildsCompleteWeekAndUsesPortableBreakfastOnOfficeDays() throws {
         let calendar = makeCalendar()
         let monday = try XCTUnwrap(calendar.date(from: DateComponents(
@@ -28,6 +39,74 @@ final class WeeklyPlanBuilderTests: XCTestCase {
                 && $0.mealType == .breakfast
         })
         XCTAssertEqual(tuesdayBreakfast.recipeID, officeBreakfast.id)
+        XCTAssertTrue(tuesdayBreakfast.isOfficeDay)
+    }
+
+    func testFreshRecipesArePreferredButDoNotRepeatEveryDay() throws {
+        let calendar = makeCalendar()
+        let monday = try XCTUnwrap(calendar.date(from: DateComponents(
+            year: 2026,
+            month: 9,
+            day: 21
+        )))
+        let freshBreakfast = PlanningRecipe(
+            id: UUID(),
+            name: "Fresh Breakfast",
+            mealTypes: [.breakfast],
+            defaultServings: 1,
+            caloriesPerServing: 450,
+            proteinPerServing: 25,
+            isOfficeFriendly: true,
+            isBatchCook: false,
+            isNew: true
+        )
+        let existingBreakfast = recipe("Existing Breakfast", mealType: .breakfast)
+
+        let plan = WeeklyPlanBuilder.build(
+            weekStarting: monday,
+            recipes: [
+                freshBreakfast,
+                existingBreakfast,
+                recipe("Lunch", mealType: .lunch),
+                recipe("Dinner", mealType: .dinner)
+            ],
+            history: [],
+            preferences: WeeklyPlanPreferences(),
+            calendar: calendar
+        )
+        let breakfasts = plan.entries.filter { $0.mealType == .breakfast }
+
+        XCTAssertEqual(breakfasts.first?.recipeID, freshBreakfast.id)
+        XCTAssertTrue(breakfasts.contains { $0.recipeID == existingBreakfast.id })
+    }
+
+    func testChoosesTheMealClosestToKyleBudgetWhenBothAreSuitable() throws {
+        let calendar = makeCalendar()
+        let monday = try XCTUnwrap(calendar.date(from: DateComponents(
+            year: 2026,
+            month: 9,
+            day: 21
+        )))
+        let lowerDinner = recipe("Lower Dinner", mealType: .dinner, calories: 600)
+        let closerDinner = recipe("Closer Dinner", mealType: .dinner, calories: 700)
+
+        let plan = WeeklyPlanBuilder.build(
+            weekStarting: monday,
+            recipes: [
+                recipe("Breakfast", mealType: .breakfast),
+                recipe("Lunch", mealType: .lunch),
+                lowerDinner,
+                closerDinner
+            ],
+            history: [],
+            preferences: WeeklyPlanPreferences(calorieRanges: [.dinner: 500...700]),
+            calendar: calendar
+        )
+        let mondayDinner = try XCTUnwrap(plan.entries.first {
+            calendar.isDate($0.date, inSameDayAs: monday) && $0.mealType == .dinner
+        })
+
+        XCTAssertEqual(mondayDinner.recipeID, closerDinner.id)
     }
 
     func testBatchDinnerCreatesLinkedLeftoverLunchWithoutPreparingItAgain() throws {
@@ -107,14 +186,15 @@ final class WeeklyPlanBuilderTests: XCTestCase {
         mealType: MealType,
         officeFriendly: Bool = false,
         defaultServings: Double? = nil,
-        isBatchCook: Bool = false
+        isBatchCook: Bool = false,
+        calories: Double = 500
     ) -> PlanningRecipe {
         PlanningRecipe(
             id: UUID(),
             name: name,
             mealTypes: [mealType],
             defaultServings: defaultServings ?? (mealType == .dinner ? 2 : 1),
-            caloriesPerServing: 500,
+            caloriesPerServing: calories,
             proteinPerServing: 30,
             isOfficeFriendly: officeFriendly,
             isBatchCook: isBatchCook,

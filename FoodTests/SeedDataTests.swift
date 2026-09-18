@@ -42,6 +42,22 @@ final class SeedDataTests: XCTestCase {
             Set(leftovers.compactMap { $0.recipe?.name }),
             Set(["Lentil + TVP Bolognese", "Bean + TVP Chilli with Rice"])
         )
+        XCTAssertTrue(leftovers.allSatisfy { $0.leftoverSource != nil })
+        XCTAssertTrue(leftovers.allSatisfy { $0.servingsPrepared == 0 })
+        XCTAssertTrue(leftovers.allSatisfy { $0.servingsEaten == 2 })
+        XCTAssertTrue(leftovers.allSatisfy { $0.leftoverSource?.servingsPrepared == 4 })
+    }
+
+    func testSeededIngredientsLinkToReusableNutritionProfiles() throws {
+        let context = persistence.container.viewContext
+        let profiles = try context.fetch(FoodNutritionProfile.fetchRequest())
+        let ingredients = try context.fetch(RecipeIngredient.fetchRequest())
+        let oats = try XCTUnwrap(ingredients.first { $0.name == "oats" })
+
+        XCTAssertGreaterThan(profiles.count, 10)
+        XCTAssertEqual(oats.nutritionProfile?.sourceReference, "11-788")
+        XCTAssertEqual(oats.nutritionProfile?.energyKcal, 381)
+        XCTAssertEqual(oats.nutritionProfile?.proteinG, 10.9)
     }
 
     func testDefaultPlanHasThreeMealsForEveryDayOfCurrentWeek() throws {
@@ -81,6 +97,17 @@ final class SeedDataTests: XCTestCase {
 
         XCTAssertEqual(pasta.count, 1)
         XCTAssertEqual(pasta.first?.amount, 300)
+    }
+
+    func testOrphanedLeftoverStillAddsGroceriesRatherThanSilentlyMissingThem() throws {
+        let request = MealPlanEntry.fetchRequest()
+        request.predicate = NSPredicate(format: "isLeftover == YES")
+        let leftover = try XCTUnwrap(persistence.container.viewContext.fetch(request).first)
+        leftover.leftoverSource = nil
+
+        let planned = ShoppingListAggregator.ingredients(from: [leftover])
+
+        XCTAssertFalse(planned.isEmpty)
     }
 
     private func waitForPersistence(file: StaticString = #filePath, line: UInt = #line) {

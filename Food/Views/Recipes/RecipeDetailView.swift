@@ -6,6 +6,7 @@ struct RecipeDetailView: View {
     @State private var servings: Int
     @State private var checkedIngredients: Set<NSManagedObjectID> = []
     @State private var checkedSteps: Set<NSManagedObjectID> = []
+    @State private var nutritionIngredient: RecipeIngredient?
 
     init(recipe: Recipe) {
         self.recipe = recipe
@@ -53,6 +54,29 @@ struct RecipeDetailView: View {
                         .foregroundStyle(.secondary)
                 }
             }
+
+            let unresolved = unresolvedIngredients
+            if !unresolved.isEmpty {
+                Section {
+                    ForEach(unresolved, id: \.objectID) { ingredient in
+                        Button {
+                            nutritionIngredient = ingredient
+                        } label: {
+                            HStack {
+                                Text(ingredient.name ?? "Ingredient")
+                                    .foregroundStyle(.primary)
+                                Spacer()
+                                Text("Add pack values")
+                                    .font(.subheadline)
+                            }
+                        }
+                    }
+                } header: {
+                    Text("Improve Nutrition Estimate")
+                } footer: {
+                    Text("Use the current product label and the quantity used in this recipe. Food recalculates the per-serving result.")
+                }
+            }
         }
         .navigationTitle(recipe.name ?? "Recipe")
         .navigationBarTitleDisplayMode(.large)
@@ -66,6 +90,19 @@ struct RecipeDetailView: View {
                 }
             }
         }
+        .sheet(isPresented: Binding(
+            get: { nutritionIngredient != nil },
+            set: { if !$0 { nutritionIngredient = nil } }
+        )) {
+            if let nutritionIngredient {
+                NutritionProfileEditor(ingredient: nutritionIngredient)
+            }
+        }
+    }
+
+    private var unresolvedIngredients: [RecipeIngredient] {
+        let unresolvedNames = Set(NutritionCalculator.calculate(recipe: recipe).unresolvedIngredients)
+        return recipe.sortedIngredients.filter { unresolvedNames.contains($0.name ?? "Ingredient") }
     }
 
     private var servingControl: some View {
@@ -99,21 +136,34 @@ struct RecipeDetailView: View {
     }
 
     private var nutritionSummary: some View {
+        let calculated = NutritionCalculator.calculate(recipe: recipe)
+        let calories = calculated.isComplete
+            ? calculated.perServing.calories
+            : (recipe.hasCalories ? recipe.caloriesPerServing : nil)
+        let protein = calculated.isComplete
+            ? calculated.perServing.proteinGrams
+            : (recipe.hasProtein ? recipe.proteinPerServing : nil)
+
         VStack(alignment: .leading, spacing: 8) {
             Text("Per serving")
                 .font(.subheadline.weight(.semibold))
             HStack(spacing: 22) {
                 Label(
-                    recipe.hasCalories ? "~\(QuantityText.format(recipe.caloriesPerServing)) kcal" : "Not estimated",
+                    calories.map { "~\(QuantityText.format($0)) kcal" } ?? "Not estimated",
                     systemImage: "flame"
                 )
                 Label(
-                    recipe.hasProtein ? "~\(QuantityText.format(recipe.proteinPerServing)) g protein" : "Not estimated",
+                    protein.map { "~\(QuantityText.format($0)) g protein" } ?? "Not estimated",
                     systemImage: "leaf"
                 )
             }
             .font(.subheadline)
             .foregroundStyle(.secondary)
+            if !calculated.isComplete {
+                Text("Estimate uses stored recipe values. Nutrition still needs matching for \(calculated.unresolvedIngredients.joined(separator: ", ")).")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
         }
         .accessibilityElement(children: .combine)
     }

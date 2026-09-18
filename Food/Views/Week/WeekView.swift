@@ -8,23 +8,20 @@ struct WeekView: View {
     @FetchRequest private var entries: FetchedResults<MealPlanEntry>
     @State private var entryToSwap: MealPlanEntry?
     @State private var showingHousehold = false
+    @State private var showingPlanner = false
+    @State private var showingShoppingGenerator = false
+    @State private var pendingShoppingWeek: Date?
+    @State private var selectedWeekStart = WeekCalendar.weekStart()
     @State private var saveError: String?
-
-    private let weekStart = WeekCalendar.weekStart()
 
     init(household: Household) {
         self.household = household
-        let start = WeekCalendar.weekStart()
-        let end = WeekCalendar.weekEnd()
         _entries = FetchRequest(
             sortDescriptors: [
                 NSSortDescriptor(keyPath: \MealPlanEntry.date, ascending: true),
                 NSSortDescriptor(keyPath: \MealPlanEntry.mealType, ascending: true)
             ],
-            predicate: NSCompoundPredicate(andPredicateWithSubpredicates: [
-                NSPredicate(format: "household == %@", household),
-                NSPredicate(format: "date >= %@ AND date < %@", start as NSDate, end as NSDate)
-            ]),
+            predicate: NSPredicate(format: "household == %@", household),
             animation: .default
         )
     }
@@ -32,12 +29,28 @@ struct WeekView: View {
     var body: some View {
         NavigationStack {
             List {
+                Section {
+                    weekNavigator
+                }
+
+                if entriesForSelectedWeek.isEmpty {
+                    ContentUnavailableView {
+                        Label("Nothing Planned", systemImage: "calendar.badge.plus")
+                    } description: {
+                        Text("Build a fresh week from your recipes and a few new ideas.")
+                    } actions: {
+                        Button("Plan This Week") { showingPlanner = true }
+                            .buttonStyle(.borderedProminent)
+                    }
+                    .listRowBackground(Color.clear)
+                }
+
                 ForEach(0..<7, id: \.self) { offset in
                     let date = WeekCalendar.calendar.date(
                         byAdding: .day,
                         value: offset,
-                        to: weekStart
-                    ) ?? weekStart
+                        to: selectedWeekStart
+                    ) ?? selectedWeekStart
                     let meals = entriesForDay(date)
 
                     Section {
@@ -65,9 +78,14 @@ struct WeekView: View {
                     }
                 }
             }
-            .navigationTitle("This Week")
+            .navigationTitle(weekTitle)
             .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
+                ToolbarItemGroup(placement: .topBarTrailing) {
+                    Button {
+                        showingPlanner = true
+                    } label: {
+                        Label("Plan Week", systemImage: "calendar.badge.plus")
+                    }
                     Button {
                         showingHousehold = true
                     } label: {
@@ -77,10 +95,31 @@ struct WeekView: View {
             }
             .sheet(item: $entryToSwap) { entry in
                 SwapRecipeView(household: household, entry: entry) { recipe in
+                    let originalLeftoverSource = entry.leftoverSource
+                    let dependentLeftovers = entry.leftoverMeals as? Set<MealPlanEntry> ?? []
+                    let servingsNeeded = entry.effectiveServingsEaten
+                        + dependentLeftovers.map(\.effectiveServingsEaten).reduce(0, +)
                     entry.recipe = recipe
                     entry.displayNameOverride = nil
                     entry.isLeftover = false
-                    entry.plannedServings = recipe.defaultServings
+                    entry.leftoverSource = nil
+                    entry.servingsPrepared = max(recipe.defaultServings, servingsNeeded)
+                    entry.plannedServings = entry.servingsPrepared
+                    entry.servingsEaten = entry.mealType == MealType.dinner.rawValue
+                        ? min(2, recipe.defaultServings)
+                        : 1
+                    if let originalLeftoverSource {
+                        let otherLeftovers = (originalLeftoverSource.leftoverMeals as? Set<MealPlanEntry> ?? [])
+                            .filter { $0.objectID != entry.objectID }
+                        let originalServingsNeeded = originalLeftoverSource.effectiveServingsEaten
+                            + otherLeftovers.map(\.effectiveServingsEaten).reduce(0, +)
+                        originalLeftoverSource.servingsPrepared = max(originalServingsNeeded, 1)
+                        originalLeftoverSource.plannedServings = originalLeftoverSource.servingsPrepared
+                    }
+                    for leftover in dependentLeftovers {
+                        leftover.recipe = recipe
+                        leftover.displayNameOverride = nil
+                    }
                     do {
                         try persistence.saveViewContext()
                     } catch {
@@ -94,6 +133,27 @@ struct WeekView: View {
                 HouseholdSettingsView(household: household)
                     .environmentObject(persistence)
             }
+            .sheet(isPresented: $showingPlanner) {
+                PlanWeekView(household: household, weekStart: selectedWeekStart) {
+                    pendingShoppingWeek = selectedWeekStart
+                }
+                .environmentObject(persistence)
+            }
+            .sheet(isPresented: $showingShoppingGenerator) {
+                GenerateShoppingListView(
+                    household: household,
+                    initialWeekStart: pendingShoppingWeek ?? selectedWeekStart
+                )
+                .environmentObject(persistence)
+            }
+            .onChange(of: showingPlanner) { _, isShowing in
+                if !isShowing, pendingShoppingWeek != nil {
+                    showingShoppingGenerator = true
+                }
+            }
+            .onChange(of: showingShoppingGenerator) { _, isShowing in
+                if !isShowing { pendingShoppingWeek = nil }
+            }
             .alert("Couldn’t Save Meal", isPresented: Binding(
                 get: { saveError != nil },
                 set: { if !$0 { saveError = nil } }
@@ -105,8 +165,73 @@ struct WeekView: View {
         }
     }
 
+    private var entriesForSelectedWeek: [MealPlanEntry] {
+        let end = WeekCalendar.weekEnd(containing: selectedWeekStart)
+        return entries.filter {
+            guard let date = $0.date else { return false }
+            return date >= selectedWeekStart && date < end
+        }
+    }
+
+    private var weekTitle: String {
+        let current = WeekCalendar.weekStart()
+        if WeekCalendar.calendar.isDate(selectedWeekStart, inSameDayAs: current) {
+            return "This Week"
+        }
+        if let next = WeekCalendar.calendar.date(byAdding: .day, value: 7, to: current),
+           WeekCalendar.calendar.isDate(selectedWeekStart, inSameDayAs: next) {
+            return "Next Week"
+        }
+        return "Week of \(selectedWeekStart.formatted(.dateTime.day().month(.abbreviated)))"
+    }
+
+    private var weekNavigator: some View {
+        HStack {
+            Button {
+                moveWeek(by: -1)
+            } label: {
+                Label("Previous Week", systemImage: "chevron.left")
+                    .labelStyle(.iconOnly)
+                    .frame(minWidth: 44, minHeight: 32)
+            }
+
+            Spacer()
+            VStack(spacing: 2) {
+                Text(weekRangeText)
+                    .font(.subheadline.weight(.semibold))
+                if !WeekCalendar.calendar.isDate(selectedWeekStart, inSameDayAs: WeekCalendar.weekStart()) {
+                    Button("Back to This Week") { selectedWeekStart = WeekCalendar.weekStart() }
+                        .font(.caption)
+                }
+            }
+            Spacer()
+
+            Button {
+                moveWeek(by: 1)
+            } label: {
+                Label("Next Week", systemImage: "chevron.right")
+                    .labelStyle(.iconOnly)
+                    .frame(minWidth: 44, minHeight: 32)
+            }
+        }
+    }
+
+    private var weekRangeText: String {
+        let end = WeekCalendar.calendar.date(byAdding: .day, value: 6, to: selectedWeekStart)
+            ?? selectedWeekStart
+        return "\(selectedWeekStart.formatted(.dateTime.day().month(.abbreviated))) – \(end.formatted(.dateTime.day().month(.abbreviated)))"
+    }
+
+    private func moveWeek(by numberOfWeeks: Int) {
+        selectedWeekStart = WeekCalendar.calendar.date(
+            byAdding: .day,
+            value: numberOfWeeks * 7,
+            to: selectedWeekStart
+        ) ?? selectedWeekStart
+    }
+
     private func entriesForDay(_ date: Date) -> [MealPlanEntry] {
-        entries
+        entriesForSelectedWeek
             .filter { entry in
                 guard let entryDate = entry.date else { return false }
                 return WeekCalendar.calendar.isDate(entryDate, inSameDayAs: date)

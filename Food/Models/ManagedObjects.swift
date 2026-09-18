@@ -7,13 +7,20 @@ final class Household: NSManagedObject {
     @NSManaged var name: String?
     @NSManaged var createdAt: Date?
     @NSManaged var seedVersion: Int16
+    @NSManaged var kyleDailyCalorieTarget: Double
+    @NSManaged var unplannedCalorieReserve: Double
     @NSManaged var recipes: NSSet?
     @NSManaged var mealPlanEntries: NSSet?
     @NSManaged var shoppingItems: NSSet?
     @NSManaged var categories: NSSet?
+    @NSManaged var nutritionProfiles: NSSet?
 
     static func fetchRequest() -> NSFetchRequest<Household> {
         NSFetchRequest(entityName: "Household")
+    }
+
+    var hasCalorieTarget: Bool {
+        primitiveValue(forKey: "kyleDailyCalorieTarget") != nil && kyleDailyCalorieTarget > 0
     }
 }
 
@@ -28,6 +35,9 @@ final class Recipe: NSManagedObject {
     @NSManaged var nutritionNote: String?
     @NSManaged var tags: String?
     @NSManaged var cookingRequired: Bool
+    @NSManaged var createdAt: Date?
+    @NSManaged var isGenerated: Bool
+    @NSManaged var isInRotation: Bool
     @NSManaged var household: Household?
     @NSManaged var ingredients: NSSet?
     @NSManaged var steps: NSSet?
@@ -63,7 +73,13 @@ final class RecipeIngredient: NSManagedObject {
     @NSManaged var sortOrder: Int16
     @NSManaged var categoryName: String?
     @NSManaged var isPantryStaple: Bool
+    @NSManaged var excludeFromNutrition: Bool
+    @NSManaged var nutritionAmount: Double
+    @NSManaged var nutritionUnit: String?
+    @NSManaged var gramsPerUnit: Double
+    @NSManaged var millilitresPerUnit: Double
     @NSManaged var recipe: Recipe?
+    @NSManaged var nutritionProfile: FoodNutritionProfile?
 
     static func fetchRequest() -> NSFetchRequest<RecipeIngredient> {
         NSFetchRequest(entityName: "RecipeIngredient")
@@ -72,6 +88,10 @@ final class RecipeIngredient: NSManagedObject {
     var hasAmount: Bool {
         entity.attributesByName["amount"]?.isOptional == false || primitiveValue(forKey: "amount") != nil
     }
+
+    var hasNutritionAmount: Bool { primitiveValue(forKey: "nutritionAmount") != nil }
+    var hasGramsPerUnit: Bool { primitiveValue(forKey: "gramsPerUnit") != nil }
+    var hasMillilitresPerUnit: Bool { primitiveValue(forKey: "millilitresPerUnit") != nil }
 }
 
 @objc(RecipeStep)
@@ -95,8 +115,12 @@ final class MealPlanEntry: NSManagedObject, Identifiable {
     @NSManaged var isOfficeDay: Bool
     @NSManaged var displayNameOverride: String?
     @NSManaged var plannedServings: Double
+    @NSManaged var servingsPrepared: Double
+    @NSManaged var servingsEaten: Double
     @NSManaged var household: Household?
     @NSManaged var recipe: Recipe?
+    @NSManaged var leftoverSource: MealPlanEntry?
+    @NSManaged var leftoverMeals: NSSet?
 
     static func fetchRequest() -> NSFetchRequest<MealPlanEntry> {
         NSFetchRequest(entityName: "MealPlanEntry")
@@ -106,6 +130,36 @@ final class MealPlanEntry: NSManagedObject, Identifiable {
         if let override = displayNameOverride, !override.isEmpty { return override }
         let base = recipe?.name ?? "Meal"
         return isLeftover ? "Leftover \(base)" : base
+    }
+
+    var effectiveServingsPrepared: Double {
+        if isLeftover { return 0 }
+        return servingsPrepared > 0 ? servingsPrepared : max(plannedServings, 1)
+    }
+
+    var effectiveServingsEaten: Double {
+        servingsEaten > 0 ? servingsEaten : (isLeftover ? max(plannedServings, 1) : min(2, max(plannedServings, 1)))
+    }
+}
+
+@objc(FoodNutritionProfile)
+final class FoodNutritionProfile: NSManagedObject {
+    @NSManaged var id: UUID?
+    @NSManaged var displayName: String?
+    @NSManaged var brand: String?
+    @NSManaged var sourceKind: String?
+    @NSManaged var sourceReference: String?
+    @NSManaged var sourceVersion: String?
+    @NSManaged var preparationState: String?
+    @NSManaged var basisQuantity: Double
+    @NSManaged var basisUnit: String?
+    @NSManaged var energyKcal: Double
+    @NSManaged var proteinG: Double
+    @NSManaged var household: Household?
+    @NSManaged var recipeIngredients: NSSet?
+
+    static func fetchRequest() -> NSFetchRequest<FoodNutritionProfile> {
+        NSFetchRequest(entityName: "FoodNutritionProfile")
     }
 }
 
@@ -130,6 +184,7 @@ final class ShoppingItem: NSManagedObject, Identifiable {
     @NSManaged var categoryName: String?
     @NSManaged var isChecked: Bool
     @NSManaged var createdAt: Date?
+    @NSManaged var generatedForWeekStart: Date?
     @NSManaged var household: Household?
 
     static func fetchRequest() -> NSFetchRequest<ShoppingItem> {

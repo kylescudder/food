@@ -13,14 +13,21 @@ struct GenerateShoppingListView: View {
     @EnvironmentObject private var persistence: PersistenceController
     @ObservedObject var household: Household
 
-    @State private var startDate = WeekCalendar.weekStart()
-    @State private var endDate = WeekCalendar.calendar.date(
-        byAdding: .day,
-        value: 6,
-        to: WeekCalendar.weekStart()
-    ) ?? .now
+    @State private var startDate: Date
+    @State private var endDate: Date
     @State private var drafts: [Draft] = []
     @State private var errorMessage: String?
+
+    init(household: Household, initialWeekStart: Date? = nil) {
+        self.household = household
+        let start = WeekCalendar.weekStart(containing: initialWeekStart ?? .now)
+        _startDate = State(initialValue: start)
+        _endDate = State(initialValue: WeekCalendar.calendar.date(
+            byAdding: .day,
+            value: 6,
+            to: start
+        ) ?? start)
+    }
 
     var body: some View {
         NavigationStack {
@@ -136,30 +143,28 @@ struct GenerateShoppingListView: View {
 
     private func addSelectedItems() {
         let selected = drafts.filter(\.isSelected).map(\.ingredient)
+        let generatedWeek = WeekCalendar.weekStart(containing: startDate)
         let request = ShoppingItem.fetchRequest()
-        request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
-            NSPredicate(format: "household == %@", household),
-            NSPredicate(format: "isChecked == NO")
-        ])
+        request.predicate = NSPredicate(format: "household == %@", household)
 
         do {
             let existingItems = try context.fetch(request)
+            existingItems
+                .filter { $0.generatedForWeekStart != nil }
+                .forEach(context.delete)
+
             for ingredient in selected {
-                if let existing = compatibleItem(for: ingredient, in: existingItems),
-                   existing.hasQuantity, let amount = ingredient.amount {
-                    existing.quantity += amount
-                } else {
-                    let item = ShoppingItem(context: context)
-                    persistence.assign(item, to: household)
-                    item.id = UUID()
-                    item.name = ingredient.name
-                    if let amount = ingredient.amount { item.quantity = amount }
-                    item.unit = ingredient.unit
-                    item.categoryName = ingredient.categoryName
-                    item.isChecked = false
-                    item.createdAt = .now
-                    item.household = household
-                }
+                let item = ShoppingItem(context: context)
+                persistence.assign(item, to: household)
+                item.id = UUID()
+                item.name = ingredient.name
+                if let amount = ingredient.amount { item.quantity = amount }
+                item.unit = ingredient.unit
+                item.categoryName = ingredient.categoryName
+                item.isChecked = false
+                item.createdAt = .now
+                item.generatedForWeekStart = generatedWeek
+                item.household = household
             }
             try persistence.saveViewContext()
             dismiss()
@@ -169,19 +174,4 @@ struct GenerateShoppingListView: View {
         }
     }
 
-    private func compatibleItem(
-        for ingredient: AggregatedIngredient,
-        in items: [ShoppingItem]
-    ) -> ShoppingItem? {
-        guard ingredient.amount != nil else { return nil }
-        return items.first {
-            ($0.name ?? "").caseInsensitiveCompare(ingredient.name) == .orderedSame
-                && normalized($0.unit) == normalized(ingredient.unit)
-                && $0.hasQuantity
-        }
-    }
-
-    private func normalized(_ value: String?) -> String {
-        (value ?? "").trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
-    }
 }

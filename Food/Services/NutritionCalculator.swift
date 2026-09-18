@@ -29,6 +29,32 @@ struct NutritionCalculation: Equatable, Sendable {
 }
 
 enum NutritionCalculator {
+    static func calculate(recipe: Recipe) -> NutritionCalculation {
+        calculate(
+            ingredients: recipe.sortedIngredients.map { ingredient in
+                let profile = ingredient.nutritionProfile
+                let amount: Double? = ingredient.hasNutritionAmount
+                    ? ingredient.nutritionAmount
+                    : (ingredient.hasAmount ? ingredient.amount : nil)
+                return NutritionIngredient(
+                    name: ingredient.name ?? "Ingredient",
+                    amount: amount,
+                    unit: ingredient.nutritionUnit ?? ingredient.unit,
+                    basisQuantity: profile?.basisQuantity ?? 0,
+                    basisUnit: profile?.basisUnit ?? "",
+                    caloriesPerBasis: profile?.energyKcal ?? 0,
+                    proteinPerBasis: profile?.proteinG ?? 0,
+                    gramsPerUnit: ingredient.hasGramsPerUnit ? ingredient.gramsPerUnit : nil,
+                    millilitresPerUnit: ingredient.hasMillilitresPerUnit
+                        ? ingredient.millilitresPerUnit
+                        : nil,
+                    isExcluded: ingredient.excludeFromNutrition
+                )
+            },
+            servings: recipe.defaultServings
+        )
+    }
+
     static func calculate(
         ingredients: [NutritionIngredient],
         servings: Double
