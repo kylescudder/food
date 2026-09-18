@@ -13,6 +13,7 @@ struct WeekView: View {
     @State private var showingShoppingGenerator = false
     @State private var pendingShoppingWeek: Date?
     @State private var selectedWeekStart = WeekCalendar.weekStart()
+    @State private var plannerWeekStart = WeekCalendar.weekStart()
     @State private var saveError: String?
 
     init(household: Household) {
@@ -40,7 +41,9 @@ struct WeekView: View {
                     } description: {
                         Text("Build a fresh week from your recipes and a few new ideas.")
                     } actions: {
-                        Button("Plan This Week") { showingPlanner = true }
+                        Button(planActionTitle(for: selectedWeekStart)) {
+                            beginPlanning(selectedWeekStart)
+                        }
                             .buttonStyle(.borderedProminent)
                     }
                     .listRowBackground(Color.clear)
@@ -83,9 +86,12 @@ struct WeekView: View {
             .toolbar {
                 ToolbarItemGroup(placement: .topBarTrailing) {
                     Button {
-                        showingPlanner = true
+                        beginPlanning(toolbarPlanningWeekStart)
                     } label: {
-                        Label("Plan Week", systemImage: "calendar.badge.plus")
+                        Label(
+                            planActionTitle(for: toolbarPlanningWeekStart),
+                            systemImage: "calendar.badge.plus"
+                        )
                     }
                     Button {
                         showingHousehold = true
@@ -135,8 +141,8 @@ struct WeekView: View {
                     .environmentObject(persistence)
             }
             .sheet(isPresented: $showingPlanner) {
-                PlanWeekView(household: household, weekStart: selectedWeekStart) {
-                    pendingShoppingWeek = selectedWeekStart
+                PlanWeekView(household: household, weekStart: plannerWeekStart) {
+                    pendingShoppingWeek = plannerWeekStart
                 }
                 .environmentObject(persistence)
             }
@@ -197,6 +203,7 @@ struct WeekView: View {
                     .labelStyle(.iconOnly)
                     .frame(minWidth: 44, minHeight: 32)
             }
+            .buttonStyle(.borderless)
 
             Spacer()
             VStack(spacing: 2) {
@@ -205,6 +212,7 @@ struct WeekView: View {
                 if !WeekCalendar.calendar.isDate(selectedWeekStart, inSameDayAs: WeekCalendar.weekStart()) {
                     Button("Back to This Week") { selectedWeekStart = WeekCalendar.weekStart() }
                         .font(.caption)
+                        .buttonStyle(.borderless)
                 }
             }
             Spacer()
@@ -216,7 +224,27 @@ struct WeekView: View {
                     .labelStyle(.iconOnly)
                     .frame(minWidth: 44, minHeight: 32)
             }
+            .buttonStyle(.borderless)
         }
+    }
+
+    private var toolbarPlanningWeekStart: Date {
+        WeekCalendar.planningTarget(
+            selectedWeek: selectedWeekStart,
+            hasPlannedMeals: !entriesForSelectedWeek.isEmpty
+        )
+    }
+
+    private func planActionTitle(for weekStart: Date) -> String {
+        let current = WeekCalendar.weekStart()
+        if WeekCalendar.calendar.isDate(weekStart, inSameDayAs: current) {
+            return "Plan This Week"
+        }
+        let next = WeekCalendar.calendar.date(byAdding: .day, value: 7, to: current)
+        if let next, WeekCalendar.calendar.isDate(weekStart, inSameDayAs: next) {
+            return "Plan Next Week"
+        }
+        return "Plan Week"
     }
 
     private var weekRangeText: String {
@@ -231,6 +259,13 @@ struct WeekView: View {
             value: numberOfWeeks * 7,
             to: selectedWeekStart
         ) ?? selectedWeekStart
+    }
+
+    private func beginPlanning(_ weekStart: Date) {
+        let target = WeekCalendar.weekStart(containing: weekStart)
+        selectedWeekStart = target
+        plannerWeekStart = target
+        showingPlanner = true
     }
 
     private func entriesForDay(_ date: Date) -> [MealPlanEntry] {

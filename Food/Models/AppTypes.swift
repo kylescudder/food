@@ -52,6 +52,19 @@ enum WeekCalendar {
     static func day(_ offset: Int, fromWeekContaining date: Date = .now) -> Date {
         calendar.date(byAdding: .day, value: offset, to: weekStart(containing: date)) ?? date
     }
+
+    static func planningTarget(
+        selectedWeek: Date,
+        hasPlannedMeals: Bool,
+        relativeTo today: Date = .now
+    ) -> Date {
+        let selected = weekStart(containing: selectedWeek)
+        let current = weekStart(containing: today)
+        guard hasPlannedMeals, calendar.isDate(selected, inSameDayAs: current) else {
+            return selected
+        }
+        return calendar.date(byAdding: .day, value: 7, to: current) ?? selected
+    }
 }
 
 enum QuantityText {
