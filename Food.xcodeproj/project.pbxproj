@@ -1,0 +1,452 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		B00000000000000000000001 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000001 /* AppDelegate.swift */; };
+		B00000000000000000000002 /* FoodApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000002 /* FoodApp.swift */; };
+		B00000000000000000000003 /* AppTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000003 /* AppTypes.swift */; };
+		B00000000000000000000004 /* ManagedObjects.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000004 /* ManagedObjects.swift */; };
+		B00000000000000000000005 /* PersistenceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000005 /* PersistenceController.swift */; };
+		B00000000000000000000006 /* SeedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000006 /* SeedData.swift */; };
+		B00000000000000000000007 /* RecipeServingScaler.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000007 /* RecipeServingScaler.swift */; };
+		B00000000000000000000008 /* ShoppingListAggregator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000008 /* ShoppingListAggregator.swift */; };
+		B00000000000000000000009 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000009 /* RootView.swift */; };
+		B0000000000000000000000A /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000000A /* WelcomeView.swift */; };
+		B0000000000000000000000B /* WeekView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000000B /* WeekView.swift */; };
+		B0000000000000000000000C /* RecipesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000000C /* RecipesView.swift */; };
+		B0000000000000000000000D /* RecipeDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000000D /* RecipeDetailView.swift */; };
+		B0000000000000000000000E /* ShoppingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000000E /* ShoppingView.swift */; };
+		B0000000000000000000000F /* ShoppingItemEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000000F /* ShoppingItemEditor.swift */; };
+		B00000000000000000000010 /* GenerateShoppingListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000010 /* GenerateShoppingListView.swift */; };
+		B00000000000000000000011 /* HouseholdSharingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000011 /* HouseholdSharingView.swift */; };
+		B00000000000000000000012 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000012 /* Assets.xcassets */; };
+		B00000000000000000000013 /* Food.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000014 /* Food.xcdatamodeld */; };
+		B00000000000000000000014 /* RecipeServingScalerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000016 /* RecipeServingScalerTests.swift */; };
+		B00000000000000000000015 /* ShoppingListAggregatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000017 /* ShoppingListAggregatorTests.swift */; };
+		B00000000000000000000016 /* SeedDataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000018 /* SeedDataTests.swift */; };
+		B00000000000000000000017 /* NutritionCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000022 /* NutritionCalculator.swift */; };
+		B00000000000000000000018 /* NutritionCalculatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000023 /* NutritionCalculatorTests.swift */; };
+		B00000000000000000000019 /* WeeklyPlanBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000024 /* WeeklyPlanBuilder.swift */; };
+		B0000000000000000000001A /* WeeklyPlanBuilderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000025 /* WeeklyPlanBuilderTests.swift */; };
+		B0000000000000000000001B /* RecipeSuggestionCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000026 /* RecipeSuggestionCatalog.swift */; };
+		B0000000000000000000001C /* RecipeSuggestionCatalogTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000027 /* RecipeSuggestionCatalogTests.swift */; };
+		B0000000000000000000001D /* PlanPersistenceService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000028 /* PlanPersistenceService.swift */; };
+		B0000000000000000000001E /* PlanPersistenceServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00000000000000000000029 /* PlanPersistenceServiceTests.swift */; };
+		B0000000000000000000001F /* FreshRecipeSuggester.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000002A /* FreshRecipeSuggester.swift */; };
+		B00000000000000000000020 /* PlanWeekView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000002B /* PlanWeekView.swift */; };
+		B00000000000000000000021 /* NutritionProfileEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000002C /* NutritionProfileEditor.swift */; };
+		B00000000000000000000022 /* WeekCalendarTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000002D /* WeekCalendarTests.swift */; };
+		B00000000000000000000023 /* QuantityTextTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000002E /* QuantityTextTests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		A00000000000000000000030 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A00000000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A00000000000000000000006;
+			remoteInfo = Food;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		F00000000000000000000001 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		F00000000000000000000002 /* FoodApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodApp.swift; sourceTree = "<group>"; };
+		F00000000000000000000003 /* AppTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTypes.swift; sourceTree = "<group>"; };
+		F00000000000000000000004 /* ManagedObjects.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManagedObjects.swift; sourceTree = "<group>"; };
+		F00000000000000000000005 /* PersistenceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceController.swift; sourceTree = "<group>"; };
+		F00000000000000000000006 /* SeedData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeedData.swift; sourceTree = "<group>"; };
+		F00000000000000000000007 /* RecipeServingScaler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeServingScaler.swift; sourceTree = "<group>"; };
+		F00000000000000000000008 /* ShoppingListAggregator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShoppingListAggregator.swift; sourceTree = "<group>"; };
+		F00000000000000000000009 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		F0000000000000000000000A /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
+		F0000000000000000000000B /* WeekView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeekView.swift; sourceTree = "<group>"; };
+		F0000000000000000000000C /* RecipesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipesView.swift; sourceTree = "<group>"; };
+		F0000000000000000000000D /* RecipeDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeDetailView.swift; sourceTree = "<group>"; };
+		F0000000000000000000000E /* ShoppingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShoppingView.swift; sourceTree = "<group>"; };
+		F0000000000000000000000F /* ShoppingItemEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShoppingItemEditor.swift; sourceTree = "<group>"; };
+		F00000000000000000000010 /* GenerateShoppingListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenerateShoppingListView.swift; sourceTree = "<group>"; };
+		F00000000000000000000011 /* HouseholdSharingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HouseholdSharingView.swift; sourceTree = "<group>"; };
+		F00000000000000000000012 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		F00000000000000000000013 /* Food.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Food.xcdatamodel; sourceTree = "<group>"; };
+		F00000000000000000000015 /* Food.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Food.entitlements; sourceTree = "<group>"; };
+		F00000000000000000000016 /* RecipeServingScalerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeServingScalerTests.swift; sourceTree = "<group>"; };
+		F00000000000000000000017 /* ShoppingListAggregatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShoppingListAggregatorTests.swift; sourceTree = "<group>"; };
+		F00000000000000000000018 /* SeedDataTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeedDataTests.swift; sourceTree = "<group>"; };
+		F00000000000000000000019 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F00000000000000000000020 /* Food.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Food.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F00000000000000000000021 /* FoodTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FoodTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		F00000000000000000000022 /* NutritionCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NutritionCalculator.swift; sourceTree = "<group>"; };
+		F00000000000000000000023 /* NutritionCalculatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NutritionCalculatorTests.swift; sourceTree = "<group>"; };
+		F00000000000000000000024 /* WeeklyPlanBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeeklyPlanBuilder.swift; sourceTree = "<group>"; };
+		F00000000000000000000025 /* WeeklyPlanBuilderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeeklyPlanBuilderTests.swift; sourceTree = "<group>"; };
+		F00000000000000000000026 /* RecipeSuggestionCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeSuggestionCatalog.swift; sourceTree = "<group>"; };
+		F00000000000000000000027 /* RecipeSuggestionCatalogTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeSuggestionCatalogTests.swift; sourceTree = "<group>"; };
+		F00000000000000000000028 /* PlanPersistenceService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlanPersistenceService.swift; sourceTree = "<group>"; };
+		F00000000000000000000029 /* PlanPersistenceServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlanPersistenceServiceTests.swift; sourceTree = "<group>"; };
+		F0000000000000000000002A /* FreshRecipeSuggester.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FreshRecipeSuggester.swift; sourceTree = "<group>"; };
+		F0000000000000000000002B /* PlanWeekView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlanWeekView.swift; sourceTree = "<group>"; };
+		F0000000000000000000002C /* NutritionProfileEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NutritionProfileEditor.swift; sourceTree = "<group>"; };
+		F0000000000000000000002D /* WeekCalendarTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeekCalendarTests.swift; sourceTree = "<group>"; };
+		F0000000000000000000002E /* QuantityTextTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuantityTextTests.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A00000000000000000000021 /* Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+		A00000000000000000000024 /* Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A00000000000000000000002 = {
+			isa = PBXGroup;
+			children = (
+				A00000000000000000000003 /* Food */,
+				A00000000000000000000004 /* FoodTests */,
+				A00000000000000000000005 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A00000000000000000000003 /* Food */ = {
+			isa = PBXGroup;
+			children = (
+				A00000000000000000000040 /* App */,
+				A00000000000000000000041 /* Models */,
+				A00000000000000000000042 /* Persistence */,
+				A00000000000000000000043 /* Seed */,
+				A00000000000000000000044 /* Services */,
+				A00000000000000000000045 /* Views */,
+				A00000000000000000000046 /* Resources */,
+				F00000000000000000000014 /* Food.xcdatamodeld */,
+				F00000000000000000000015 /* Food.entitlements */,
+			);
+			path = Food;
+			sourceTree = "<group>";
+		};
+		A00000000000000000000004 /* FoodTests */ = {
+			isa = PBXGroup;
+			children = (
+				F00000000000000000000016 /* RecipeServingScalerTests.swift */,
+				F00000000000000000000017 /* ShoppingListAggregatorTests.swift */,
+				F00000000000000000000018 /* SeedDataTests.swift */,
+				F00000000000000000000023 /* NutritionCalculatorTests.swift */,
+				F00000000000000000000025 /* WeeklyPlanBuilderTests.swift */,
+				F00000000000000000000027 /* RecipeSuggestionCatalogTests.swift */,
+				F00000000000000000000029 /* PlanPersistenceServiceTests.swift */,
+				F0000000000000000000002D /* WeekCalendarTests.swift */,
+				F0000000000000000000002E /* QuantityTextTests.swift */,
+			);
+			path = FoodTests;
+			sourceTree = "<group>";
+		};
+		A00000000000000000000005 /* Products */ = {
+			isa = PBXGroup;
+			children = (F00000000000000000000020 /* Food.app */, F00000000000000000000021 /* FoodTests.xctest */);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A00000000000000000000040 /* App */ = {isa = PBXGroup; children = (F00000000000000000000001, F00000000000000000000002, F00000000000000000000019); path = App; sourceTree = "<group>"; };
+		A00000000000000000000041 /* Models */ = {isa = PBXGroup; children = (F00000000000000000000003, F00000000000000000000004); path = Models; sourceTree = "<group>"; };
+		A00000000000000000000042 /* Persistence */ = {isa = PBXGroup; children = (F00000000000000000000005); path = Persistence; sourceTree = "<group>"; };
+		A00000000000000000000043 /* Seed */ = {isa = PBXGroup; children = (F00000000000000000000006); path = Seed; sourceTree = "<group>"; };
+		A00000000000000000000044 /* Services */ = {isa = PBXGroup; children = (F00000000000000000000007, F00000000000000000000008, F00000000000000000000022, F00000000000000000000024, F00000000000000000000026, F00000000000000000000028, F0000000000000000000002A); path = Services; sourceTree = "<group>"; };
+		A00000000000000000000045 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				F00000000000000000000009,
+				A00000000000000000000050 /* Setup */,
+				A00000000000000000000051 /* Week */,
+				A00000000000000000000052 /* Recipes */,
+				A00000000000000000000053 /* Shopping */,
+				A00000000000000000000054 /* Sharing */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		A00000000000000000000046 /* Resources */ = {isa = PBXGroup; children = (F00000000000000000000012); path = Resources; sourceTree = "<group>"; };
+		A00000000000000000000050 /* Setup */ = {isa = PBXGroup; children = (F0000000000000000000000A); path = Setup; sourceTree = "<group>"; };
+		A00000000000000000000051 /* Week */ = {isa = PBXGroup; children = (F0000000000000000000000B, F0000000000000000000002B); path = Week; sourceTree = "<group>"; };
+		A00000000000000000000052 /* Recipes */ = {isa = PBXGroup; children = (F0000000000000000000000C, F0000000000000000000000D, F0000000000000000000002C); path = Recipes; sourceTree = "<group>"; };
+		A00000000000000000000053 /* Shopping */ = {isa = PBXGroup; children = (F0000000000000000000000E, F0000000000000000000000F, F00000000000000000000010); path = Shopping; sourceTree = "<group>"; };
+		A00000000000000000000054 /* Sharing */ = {isa = PBXGroup; children = (F00000000000000000000011); path = Sharing; sourceTree = "<group>"; };
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A00000000000000000000006 /* Food */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A00000000000000000000011 /* Build configuration list for PBXNativeTarget "Food" */;
+			buildPhases = (A00000000000000000000020 /* Sources */, A00000000000000000000021 /* Frameworks */, A00000000000000000000022 /* Resources */);
+			buildRules = ();
+			dependencies = ();
+			name = Food;
+			productName = Food;
+			productReference = F00000000000000000000020 /* Food.app */;
+			productType = "com.apple.product-type.application";
+		};
+		A00000000000000000000007 /* FoodTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A00000000000000000000012 /* Build configuration list for PBXNativeTarget "FoodTests" */;
+			buildPhases = (A00000000000000000000023 /* Sources */, A00000000000000000000024 /* Frameworks */, A00000000000000000000025 /* Resources */);
+			buildRules = ();
+			dependencies = (A00000000000000000000031 /* PBXTargetDependency */);
+			name = FoodTests;
+			productName = FoodTests;
+			productReference = F00000000000000000000021 /* FoodTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A00000000000000000000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1600;
+				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+					A00000000000000000000006 = {CreatedOnToolsVersion = 16.0; ProvisioningStyle = Automatic; };
+					A00000000000000000000007 = {CreatedOnToolsVersion = 16.0; ProvisioningStyle = Automatic; TestTargetID = A00000000000000000000006; };
+				};
+			};
+			buildConfigurationList = A00000000000000000000010 /* Build configuration list for PBXProject "Food" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (en, Base);
+			mainGroup = A00000000000000000000002;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = A00000000000000000000005 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (A00000000000000000000006 /* Food */, A00000000000000000000007 /* FoodTests */);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A00000000000000000000022 /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (B00000000000000000000012 /* Assets.xcassets in Resources */); runOnlyForDeploymentPostprocessing = 0; };
+		A00000000000000000000025 /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A00000000000000000000020 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B00000000000000000000001, B00000000000000000000002, B00000000000000000000003,
+				B00000000000000000000004, B00000000000000000000005, B00000000000000000000006,
+				B00000000000000000000007, B00000000000000000000008, B00000000000000000000009,
+				B0000000000000000000000A, B0000000000000000000000B, B0000000000000000000000C,
+				B0000000000000000000000D, B0000000000000000000000E, B0000000000000000000000F,
+				B00000000000000000000010, B00000000000000000000011,
+				B00000000000000000000017 /* NutritionCalculator.swift in Sources */,
+				B00000000000000000000019 /* WeeklyPlanBuilder.swift in Sources */,
+				B0000000000000000000001B /* RecipeSuggestionCatalog.swift in Sources */,
+				B0000000000000000000001D /* PlanPersistenceService.swift in Sources */,
+				B0000000000000000000001F /* FreshRecipeSuggester.swift in Sources */,
+				B00000000000000000000020 /* PlanWeekView.swift in Sources */,
+				B00000000000000000000021 /* NutritionProfileEditor.swift in Sources */,
+				B00000000000000000000013 /* Food.xcdatamodeld in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A00000000000000000000023 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (B00000000000000000000014, B00000000000000000000015, B00000000000000000000016, B00000000000000000000018, B0000000000000000000001A, B0000000000000000000001C, B0000000000000000000001E, B00000000000000000000022, B00000000000000000000023);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		A00000000000000000000031 /* PBXTargetDependency */ = {isa = PBXTargetDependency; target = A00000000000000000000006 /* Food */; targetProxy = A00000000000000000000030 /* PBXContainerItemProxy */; };
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		A00000000000000000000060 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("DEBUG=1", "$(inherited)");
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		A00000000000000000000061 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		A00000000000000000000062 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Food/Food.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Food/App/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kyle.food;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		A00000000000000000000063 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Food/Food.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Food/App/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kyle.food;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		A00000000000000000000064 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kyle.food.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Food.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Food";
+			};
+			name = Debug;
+		};
+		A00000000000000000000065 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kyle.food.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Food.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Food";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A00000000000000000000010 /* Build configuration list for PBXProject "Food" */ = {isa = XCConfigurationList; buildConfigurations = (A00000000000000000000060, A00000000000000000000061); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+		A00000000000000000000011 /* Build configuration list for PBXNativeTarget "Food" */ = {isa = XCConfigurationList; buildConfigurations = (A00000000000000000000062, A00000000000000000000063); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+		A00000000000000000000012 /* Build configuration list for PBXNativeTarget "FoodTests" */ = {isa = XCConfigurationList; buildConfigurations = (A00000000000000000000064, A00000000000000000000065); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+/* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		F00000000000000000000014 /* Food.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (F00000000000000000000013 /* Food.xcdatamodel */);
+			currentVersion = F00000000000000000000013 /* Food.xcdatamodel */;
+			path = Food.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
+	};
+	rootObject = A00000000000000000000001 /* Project object */;
+}
