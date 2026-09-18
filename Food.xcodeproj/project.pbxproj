@@ -41,6 +41,7 @@
 		B00000000000000000000020 /* PlanWeekView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000002B /* PlanWeekView.swift */; };
 		B00000000000000000000021 /* NutritionProfileEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000002C /* NutritionProfileEditor.swift */; };
 		B00000000000000000000022 /* WeekCalendarTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000002D /* WeekCalendarTests.swift */; };
+		B00000000000000000000023 /* QuantityTextTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0000000000000000000002E /* QuantityTextTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -92,6 +93,7 @@
 		F0000000000000000000002B /* PlanWeekView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlanWeekView.swift; sourceTree = "<group>"; };
 		F0000000000000000000002C /* NutritionProfileEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NutritionProfileEditor.swift; sourceTree = "<group>"; };
 		F0000000000000000000002D /* WeekCalendarTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeekCalendarTests.swift; sourceTree = "<group>"; };
+		F0000000000000000000002E /* QuantityTextTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuantityTextTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -136,6 +138,7 @@
 				F00000000000000000000027 /* RecipeSuggestionCatalogTests.swift */,
 				F00000000000000000000029 /* PlanPersistenceServiceTests.swift */,
 				F0000000000000000000002D /* WeekCalendarTests.swift */,
+				F0000000000000000000002E /* QuantityTextTests.swift */,
 			);
 			path = FoodTests;
 			sourceTree = "<group>";
@@ -252,7 +255,7 @@
 		A00000000000000000000023 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
-			files = (B00000000000000000000014, B00000000000000000000015, B00000000000000000000016, B00000000000000000000018, B0000000000000000000001A, B0000000000000000000001C, B0000000000000000000001E, B00000000000000000000022);
+			files = (B00000000000000000000014, B00000000000000000000015, B00000000000000000000016, B00000000000000000000018, B0000000000000000000001A, B0000000000000000000001C, B0000000000000000000001E, B00000000000000000000022, B00000000000000000000023);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */

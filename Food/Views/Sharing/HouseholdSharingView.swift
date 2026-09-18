@@ -1,13 +1,18 @@
 import CloudKit
+import Dispatch
 import SwiftUI
 import UIKit
 
 struct HouseholdSharingView: UIViewControllerRepresentable {
     @EnvironmentObject private var persistence: PersistenceController
     @ObservedObject var household: Household
+    @Binding var errorMessage: String?
 
     func makeCoordinator() -> Coordinator {
-        Coordinator(title: household.name ?? "Shared Household")
+        Coordinator(
+            title: household.name ?? "Shared Household",
+            errorMessage: $errorMessage
+        )
     }
 
     func makeUIViewController(context: Context) -> UICloudSharingController {
@@ -38,8 +43,12 @@ struct HouseholdSharingView: UIViewControllerRepresentable {
 
     final class Coordinator: NSObject, UICloudSharingControllerDelegate {
         let title: String
+        private let errorMessage: Binding<String?>
 
-        init(title: String) { self.title = title }
+        init(title: String, errorMessage: Binding<String?>) {
+            self.title = title
+            self.errorMessage = errorMessage
+        }
 
         func itemTitle(for csc: UICloudSharingController) -> String? { title }
 
@@ -47,7 +56,10 @@ struct HouseholdSharingView: UIViewControllerRepresentable {
             _ csc: UICloudSharingController,
             failedToSaveShareWithError error: Error
         ) {
-            assertionFailure("Cloud sharing failed: \(error.localizedDescription)")
+            let message = error.localizedDescription
+            DispatchQueue.main.async {
+                self.errorMessage.wrappedValue = message
+            }
         }
 
         func cloudSharingControllerDidSaveShare(_ csc: UICloudSharingController) {}
@@ -60,6 +72,7 @@ struct HouseholdSettingsView: View {
     @EnvironmentObject private var persistence: PersistenceController
     @ObservedObject var household: Household
     @State private var showingShare = false
+    @State private var shareError: String?
 
     var body: some View {
         NavigationStack {
@@ -70,6 +83,7 @@ struct HouseholdSettingsView: View {
 
                 Section {
                     Button {
+                        shareError = nil
                         showingShare = true
                     } label: {
                         Label("Invite or Manage People", systemImage: "person.2.badge.gearshape")
@@ -91,8 +105,16 @@ struct HouseholdSettingsView: View {
                 }
             }
             .sheet(isPresented: $showingShare) {
-                HouseholdSharingView(household: household)
+                HouseholdSharingView(household: household, errorMessage: $shareError)
                     .environmentObject(persistence)
+                    .alert("Couldn’t Share Household", isPresented: Binding(
+                        get: { shareError != nil },
+                        set: { if !$0 { shareError = nil } }
+                    )) {
+                        Button("OK", role: .cancel) {}
+                    } message: {
+                        Text(shareError ?? "Please check iCloud and your connection, then try again.")
+                    }
             }
         }
     }

@@ -87,6 +87,27 @@ enum QuantityText {
         return value.formatted(.number.precision(.fractionLength(0...1)))
     }
 
+    static func parse(_ text: String) -> Double? {
+        let normalized = text
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .replacingOccurrences(of: ",", with: ".")
+        if let value = Double(normalized) { return value }
+
+        guard let suffix = normalized.last else { return nil }
+        let fraction: Double
+        switch suffix {
+        case "¼": fraction = 0.25
+        case "½": fraction = 0.5
+        case "¾": fraction = 0.75
+        default: return nil
+        }
+
+        let wholeText = normalized.dropLast()
+        guard !wholeText.isEmpty else { return fraction }
+        guard let whole = Double(wholeText) else { return nil }
+        return whole + fraction
+    }
+
     static func ingredient(amount: Double?, unit: String?, name: String, note: String? = nil) -> String {
         var components: [String] = []
         if let amount { components.append(format(amount)) }

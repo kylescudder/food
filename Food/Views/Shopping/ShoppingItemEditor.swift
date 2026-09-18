@@ -93,8 +93,7 @@ struct ShoppingItemEditor: View {
             ? nil
             : unit.trimmingCharacters(in: .whitespacesAndNewlines)
 
-        let normalizedQuantity = quantity.replacingOccurrences(of: ",", with: ".")
-        if let parsed = Double(normalizedQuantity), parsed > 0 {
+        if let parsed = QuantityText.parse(quantity), parsed > 0 {
             target.quantity = parsed
         } else {
             target.setPrimitiveValue(nil, forKey: "quantity")
