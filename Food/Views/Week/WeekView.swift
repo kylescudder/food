@@ -1,4 +1,5 @@
 import CoreData
+import Dispatch
 import SwiftUI
 
 struct WeekView: View {
@@ -148,7 +149,9 @@ struct WeekView: View {
             }
             .onChange(of: showingPlanner) { _, isShowing in
                 if !isShowing, pendingShoppingWeek != nil {
-                    showingShoppingGenerator = true
+                    DispatchQueue.main.async {
+                        if pendingShoppingWeek != nil { showingShoppingGenerator = true }
+                    }
                 }
             }
             .onChange(of: showingShoppingGenerator) { _, isShowing in
