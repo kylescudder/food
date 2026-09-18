@@ -81,8 +81,20 @@ struct RecipeDetailView: View {
         .navigationTitle(recipe.name ?? "Recipe")
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
-            if !checkedIngredients.isEmpty || !checkedSteps.isEmpty {
-                ToolbarItem(placement: .topBarTrailing) {
+            ToolbarItemGroup(placement: .topBarTrailing) {
+                if !editableNutritionIngredients.isEmpty {
+                    Menu {
+                        ForEach(editableNutritionIngredients, id: \.objectID) { ingredient in
+                            Button(ingredient.name ?? "Ingredient") {
+                                nutritionIngredient = ingredient
+                            }
+                        }
+                    } label: {
+                        Label("Product Nutrition", systemImage: "info.circle")
+                    }
+                }
+
+                if !checkedIngredients.isEmpty || !checkedSteps.isEmpty {
                     Button("Reset") {
                         checkedIngredients.removeAll()
                         checkedSteps.removeAll()
@@ -103,6 +115,10 @@ struct RecipeDetailView: View {
     private var unresolvedIngredients: [RecipeIngredient] {
         let unresolvedNames = Set(NutritionCalculator.calculate(recipe: recipe).unresolvedIngredients)
         return recipe.sortedIngredients.filter { unresolvedNames.contains($0.name ?? "Ingredient") }
+    }
+
+    private var editableNutritionIngredients: [RecipeIngredient] {
+        recipe.sortedIngredients.filter { !$0.excludeFromNutrition }
     }
 
     private var servingControl: some View {

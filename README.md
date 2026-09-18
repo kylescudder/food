@@ -108,7 +108,7 @@ If acceptance does not arrive, verify that both accounts have iCloud Drive enabl
 ## Nutrition Data
 
 - Generic seeded values are snapshots from the **UK Composition of Foods Integrated Dataset (CoFID) 2021**, identified by their CoFID food code and preparation state.
-- Product-sensitive ingredients should use the actual label. On a recipe with unresolved nutrition, tap **Add pack values**, enter the amount used in the recipe plus the pack's kcal and protein per 100 g/ml, and save.
+- Product-sensitive ingredients should use the actual label. On a recipe with unresolved nutrition, tap **Add pack values**. To replace an existing generic value, open the recipe's **Product Nutrition** menu. Enter the amount used plus the pack's kcal and protein per 100 g/ml, then save.
 - You do not need to purchase a product first if its current retailer/manufacturer listing provides the same label values. Once a household chooses a particular product, its saved label is the better source.
 - Calculations retain full precision and the UI shows approximate rounded values. An incomplete ingredient conversion stays visibly incomplete instead of being counted as zero.
 - Kyle's target is a planning input, not a medical calculation. Food does not estimate maintenance calories, prescribe a deficit, track intake, or assign Kyle's target to Rhiannon.
