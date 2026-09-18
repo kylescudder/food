@@ -160,7 +160,7 @@ struct RecipeDetailView: View {
             ? calculated.perServing.proteinGrams
             : (recipe.hasProtein ? recipe.proteinPerServing : nil)
 
-        VStack(alignment: .leading, spacing: 8) {
+        return VStack(alignment: .leading, spacing: 8) {
             Text("Per serving")
                 .font(.subheadline.weight(.semibold))
             HStack(spacing: 22) {
