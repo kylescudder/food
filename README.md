@@ -66,6 +66,11 @@ xcodebuild \
   test
 ```
 
+Pull requests are also built and tested by GitHub Actions. Pushes to `main`
+that change the app automatically archive and upload a uniquely numbered build
+to TestFlight. See [`Docs/TestFlightCI.md`](Docs/TestFlightCI.md) for the one-time
+signing and repository-secret setup.
+
 ## CloudKit Setup
 
 The checked-in placeholder identifiers are:

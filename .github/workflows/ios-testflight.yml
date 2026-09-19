@@ -1,0 +1,138 @@
+name: iOS · TestFlight
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "Food/**"
+      - "Food.xcodeproj/**"
+      - "Scripts/ci/**"
+      - ".github/workflows/ios-testflight.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: food-ios-testflight
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Archive and upload
+    runs-on: macos-26
+    timeout-minutes: 45
+    env:
+      SCHEME: Food
+      ARCHIVE_PATH: build/Food.xcarchive
+      EXPORT_PATH: build/ipa
+      EXPORT_OPTIONS: Scripts/ci/ExportOptions.plist
+      APP_STORE_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+      APP_STORE_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID }}
+      APP_STORE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+      IOS_DISTRIBUTION_CERTIFICATE_BASE64: ${{ secrets.IOS_DISTRIBUTION_CERTIFICATE_BASE64 }}
+      IOS_DISTRIBUTION_CERTIFICATE_PASSWORD: ${{ secrets.IOS_DISTRIBUTION_CERTIFICATE_PASSWORD }}
+      IOS_FOOD_PROFILE_BASE64: ${{ secrets.IOS_FOOD_PROFILE_BASE64 }}
+      IOS_KEYCHAIN_PASSWORD: ${{ secrets.IOS_KEYCHAIN_PASSWORD }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Show Xcode version
+        run: xcodebuild -version
+
+      - name: Install iOS platform (if missing)
+        run: sudo xcodebuild -downloadPlatform iOS || true
+
+      - name: Validate release secrets
+        env:
+          API_KEY_P8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
+        run: |
+          test -n "$API_KEY_P8" || (echo "::error::APP_STORE_CONNECT_API_KEY_P8 is empty" && exit 1)
+          test -n "$APP_STORE_KEY_ID" || (echo "::error::APP_STORE_CONNECT_API_KEY_ID is empty" && exit 1)
+          test -n "$APP_STORE_ISSUER_ID" || (echo "::error::APP_STORE_CONNECT_API_KEY_ISSUER_ID is empty" && exit 1)
+          test -n "$APP_STORE_TEAM_ID" || (echo "::error::APPLE_TEAM_ID is empty" && exit 1)
+          test -n "$IOS_DISTRIBUTION_CERTIFICATE_BASE64" || (echo "::error::IOS_DISTRIBUTION_CERTIFICATE_BASE64 is empty" && exit 1)
+          test -n "$IOS_DISTRIBUTION_CERTIFICATE_PASSWORD" || (echo "::error::IOS_DISTRIBUTION_CERTIFICATE_PASSWORD is empty" && exit 1)
+          test -n "$IOS_FOOD_PROFILE_BASE64" || (echo "::error::IOS_FOOD_PROFILE_BASE64 is empty" && exit 1)
+          test -n "$IOS_KEYCHAIN_PASSWORD" || (echo "::error::IOS_KEYCHAIN_PASSWORD is empty" && exit 1)
+
+      - name: Write App Store Connect API key
+        env:
+          API_KEY_P8: ${{ secrets.APP_STORE_CONNECT_API_KEY_P8 }}
+        run: |
+          mkdir -p "$HOME/.appstoreconnect/private_keys"
+          printf '%s\n' "$API_KEY_P8" > "$HOME/.appstoreconnect/private_keys/AuthKey_${APP_STORE_KEY_ID}.p8"
+          chmod 600 "$HOME/.appstoreconnect/private_keys/AuthKey_${APP_STORE_KEY_ID}.p8"
+
+      - name: Install signing certificate and profile
+        run: |
+          certificate_path="$RUNNER_TEMP/food-distribution.p12"
+          keychain_path="$RUNNER_TEMP/food-signing.keychain-db"
+          profiles_dir="$HOME/Library/MobileDevice/Provisioning Profiles"
+          profile_path="$RUNNER_TEMP/Food_App_Store.mobileprovision"
+          profile_plist="$RUNNER_TEMP/Food_App_Store.plist"
+
+          printf '%s' "$IOS_DISTRIBUTION_CERTIFICATE_BASE64" | base64 --decode > "$certificate_path"
+
+          security create-keychain -p "$IOS_KEYCHAIN_PASSWORD" "$keychain_path"
+          security set-keychain-settings -lut 21600 "$keychain_path"
+          security unlock-keychain -p "$IOS_KEYCHAIN_PASSWORD" "$keychain_path"
+          security import "$certificate_path" -P "$IOS_DISTRIBUTION_CERTIFICATE_PASSWORD" -A -t cert -f pkcs12 -k "$keychain_path"
+          security list-keychain -d user -s "$keychain_path"
+          security set-key-partition-list -S apple-tool:,apple: -s -k "$IOS_KEYCHAIN_PASSWORD" "$keychain_path"
+
+          mkdir -p "$profiles_dir"
+          printf '%s' "$IOS_FOOD_PROFILE_BASE64" | base64 --decode > "$profile_path"
+          security cms -D -i "$profile_path" > "$profile_plist"
+
+          profile_name=$(/usr/libexec/PlistBuddy -c "Print :Name" "$profile_plist")
+          profile_uuid=$(/usr/libexec/PlistBuddy -c "Print :UUID" "$profile_plist")
+
+          if [ "$profile_name" != "Food App Store" ]; then
+            echo "::error::Expected provisioning profile 'Food App Store' but secret contains '$profile_name'"
+            exit 1
+          fi
+
+          cp "$profile_path" "$profiles_dir/$profile_uuid.mobileprovision"
+          echo "Installed provisioning profile '$profile_name' as $profile_uuid.mobileprovision"
+
+      - name: Archive
+        run: |
+          set -o pipefail
+          xcodebuild archive \
+            -project Food.xcodeproj \
+            -scheme "$SCHEME" \
+            -configuration Release \
+            -destination "generic/platform=iOS" \
+            -archivePath "$ARCHIVE_PATH" \
+            DEVELOPMENT_TEAM="$APP_STORE_TEAM_ID" \
+            CURRENT_PROJECT_VERSION="$GITHUB_RUN_NUMBER"
+
+      - name: Export IPA
+        run: |
+          xcodebuild -exportArchive \
+            -archivePath "$ARCHIVE_PATH" \
+            -exportPath "$EXPORT_PATH" \
+            -exportOptionsPlist "$EXPORT_OPTIONS"
+
+      - name: Upload to TestFlight
+        run: |
+          shopt -s nullglob
+          ipas=("$EXPORT_PATH"/*.ipa)
+          ipa="${ipas[0]:-}"
+          test -n "$ipa" || (echo "::error::No .ipa produced by export" && exit 1)
+          xcrun altool --upload-app \
+            --file "$ipa" \
+            --type ios \
+            --apiKey "$APP_STORE_KEY_ID" \
+            --apiIssuer "$APP_STORE_ISSUER_ID"
+
+      - name: Upload archive as artifact (on failure)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Food-failed-archive
+          path: ${{ env.ARCHIVE_PATH }}
+          retention-days: 7
