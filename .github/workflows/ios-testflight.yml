@@ -71,8 +71,8 @@ jobs:
           certificate_path="$RUNNER_TEMP/food-distribution.p12"
           keychain_path="$RUNNER_TEMP/food-signing.keychain-db"
           profiles_dir="$HOME/Library/MobileDevice/Provisioning Profiles"
-          profile_path="$RUNNER_TEMP/org.thescudders.food.mobileprovision"
-          profile_plist="$RUNNER_TEMP/org.thescudders.food.plist"
+          profile_path="$RUNNER_TEMP/Food_App_Store.mobileprovision"
+          profile_plist="$RUNNER_TEMP/Food_App_Store.plist"
 
           printf '%s' "$IOS_DISTRIBUTION_CERTIFICATE_BASE64" | base64 --decode > "$certificate_path"
 
@@ -90,8 +90,8 @@ jobs:
           profile_name=$(/usr/libexec/PlistBuddy -c "Print :Name" "$profile_plist")
           profile_uuid=$(/usr/libexec/PlistBuddy -c "Print :UUID" "$profile_plist")
 
-          if [ "$profile_name" != "org.thescudders.food" ]; then
-            echo "::error::Expected provisioning profile 'org.thescudders.food' but secret contains '$profile_name'"
+          if [ "$profile_name" != "Food App Store" ]; then
+            echo "::error::Expected provisioning profile 'Food App Store' but secret contains '$profile_name'"
             exit 1
           fi
 

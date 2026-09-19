@@ -30,7 +30,7 @@ Create or confirm the explicit App ID `org.thescudders.food` under the same team
 
 Create an App Store Connect app using bundle ID `org.thescudders.food`. Create an App
 Store provisioning profile for that identifier with the exact display name
-`org.thescudders.food`. The profile must include the app's iCloud and push
+`Food App Store`. The profile must include the app's iCloud and push
 capabilities. Export an Apple Distribution certificate as a password-protected
 `.p12` file.
 
@@ -50,7 +50,7 @@ Actions**:
 | `APPLE_TEAM_ID` | 10-character Apple Developer Team ID |
 | `IOS_DISTRIBUTION_CERTIFICATE_BASE64` | Base64-encoded `.p12` Apple Distribution certificate |
 | `IOS_DISTRIBUTION_CERTIFICATE_PASSWORD` | Password used when exporting the `.p12` certificate |
-| `IOS_FOOD_PROFILE_BASE64` | Base64-encoded provisioning profile named `org.thescudders.food` |
+| `IOS_FOOD_PROFILE_BASE64` | Base64-encoded provisioning profile named `Food App Store` |
 | `IOS_KEYCHAIN_PASSWORD` | A strong temporary CI keychain password |
 
 The API key and distribution certificate secrets can reuse the values from the
@@ -60,7 +60,7 @@ app-specific.
 To encode the binary signing files on macOS:
 
 ```sh
-base64 -i org.thescudders.food.mobileprovision | pbcopy
+base64 -i Food_App_Store.mobileprovision | pbcopy
 base64 -i Distribution.p12 | pbcopy
 ```
 
@@ -83,5 +83,5 @@ After that succeeds, qualifying pushes to `main` upload automatically.
 - Rotate the App Store Connect key by updating the three
   `APP_STORE_CONNECT_API_KEY_*` secrets.
 - Rotate signing assets by replacing the certificate or provisioning-profile
-  secrets. Keep the profile name `org.thescudders.food` unless the Xcode project,
+  secrets. Keep the profile name `Food App Store` unless the Xcode project,
   export options, and workflow are updated together.

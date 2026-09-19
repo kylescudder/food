@@ -9,7 +9,7 @@
 	<key>provisioningProfiles</key>
 	<dict>
 		<key>org.thescudders.food</key>
-		<string>org.thescudders.food</string>
+		<string>Food App Store</string>
 	</dict>
 	<key>uploadSymbols</key>
 	<true/>
