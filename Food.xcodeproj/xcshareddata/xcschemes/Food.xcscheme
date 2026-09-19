@@ -7,7 +7,7 @@
          </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
-   <TestAction buildConfiguration="Debug" selectedDebuggerIdentifier="Xcode.DebuggerFoundation.Debugger.LLDB" selectedLauncherIdentifier="Xcode.DebuggerFoundation.Launcher.LLDB" shouldUseLaunchSchemeArgsEnv="YES" shouldAutocreateTestPlan="YES">
+   <TestAction buildConfiguration="Debug" selectedDebuggerIdentifier="Xcode.DebuggerFoundation.Debugger.LLDB" selectedLauncherIdentifier="Xcode.DebuggerFoundation.Launcher.LLDB" shouldUseLaunchSchemeArgsEnv="NO" shouldAutocreateTestPlan="YES">
       <Testables>
          <TestableReference skipped="NO" parallelizable="YES">
             <BuildableReference BuildableIdentifier="primary" BlueprintIdentifier="A00000000000000000000007" BuildableName="FoodTests.xctest" BlueprintName="FoodTests" ReferencedContainer="container:Food.xcodeproj"/>
