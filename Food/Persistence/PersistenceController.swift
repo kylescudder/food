@@ -5,7 +5,7 @@ import Foundation
 
 final class PersistenceController: ObservableObject {
     static let shared = PersistenceController()
-    static let cloudKitContainerIdentifier = "iCloud.com.kyle.food"
+    static let cloudKitContainerIdentifier = "iCloud.org.thescudders.food"
 
     enum PersistenceError: LocalizedError {
         case notReady

@@ -76,7 +76,7 @@ signing and repository-secret setup.
 The checked-in placeholder identifiers are:
 
 - Bundle ID: `org.thescudders.food`
-- CloudKit container: `iCloud.com.kyle.food`
+- CloudKit container: `iCloud.org.thescudders.food`
 
 These identifiers must be available to your Apple Developer team. If they are not, replace the CloudKit identifier in both `Food/Food.entitlements` and `PersistenceController.cloudKitContainerIdentifier`, then use the matching container below.
 

@@ -25,7 +25,7 @@ can be reused.
 Create or confirm the explicit App ID `org.thescudders.food` under the same team as
 `APPLE_TEAM_ID`. Enable the capabilities used by `Food/Food.entitlements`:
 
-- iCloud with CloudKit container `iCloud.com.kyle.food`
+- iCloud with CloudKit container `iCloud.org.thescudders.food`
 - Push Notifications
 
 Create an App Store Connect app using bundle ID `org.thescudders.food`. Create an App
