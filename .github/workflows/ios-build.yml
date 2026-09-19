@@ -1,0 +1,62 @@
+name: iOS · Build
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - "Food/**"
+      - "FoodTests/**"
+      - "Food.xcodeproj/**"
+      - "Scripts/ci/**"
+      - ".github/workflows/ios-build.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: food-ios-build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build and test for simulator
+    runs-on: macos-26
+    timeout-minutes: 30
+    env:
+      SCHEME: Food
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Show Xcode version
+        run: xcodebuild -version
+
+      - name: Install iOS platform (if missing)
+        run: sudo xcodebuild -downloadPlatform iOS || true
+
+      - name: Build
+        run: |
+          set -o pipefail
+          xcodebuild build \
+            -project Food.xcodeproj \
+            -scheme "$SCHEME" \
+            -configuration Debug \
+            -destination "generic/platform=iOS Simulator" \
+            CODE_SIGNING_ALLOWED=NO
+
+      - name: Test
+        run: |
+          set -o pipefail
+          simulator_id="$(
+            xcrun simctl list devices available -j |
+              jq -r '[.devices[][] | select(.isAvailable and (.name | startswith("iPhone")))] | first | .udid'
+          )"
+          test -n "$simulator_id" && test "$simulator_id" != "null"
+          xcodebuild test \
+            -project Food.xcodeproj \
+            -scheme "$SCHEME" \
+            -configuration Debug \
+            -destination "platform=iOS Simulator,id=$simulator_id" \
+            CODE_SIGNING_ALLOWED=NO
