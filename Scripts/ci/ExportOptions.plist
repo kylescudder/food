@@ -8,8 +8,8 @@
 	<string>manual</string>
 	<key>provisioningProfiles</key>
 	<dict>
-		<key>com.kyle.food</key>
-		<string>Food App Store</string>
+		<key>org.thescudders.food</key>
+		<string>org.thescudders.food</string>
 	</dict>
 	<key>uploadSymbols</key>
 	<true/>
