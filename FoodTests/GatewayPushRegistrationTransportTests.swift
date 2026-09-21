@@ -203,8 +203,8 @@ private final class URLProtocolHandlerStorage: @unchecked Sendable {
     }
 
     func response(for request: URLRequest) throws -> (URLResponse, Data) {
-        let handler = lock.withLock { handler }
-        guard let handler else { throw URLError(.badServerResponse) }
-        return try handler(request)
+        let currentHandler: Handler? = lock.withLock { self.handler }
+        guard let currentHandler else { throw URLError(.badServerResponse) }
+        return try currentHandler(request)
     }
 }
