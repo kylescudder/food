@@ -26,6 +26,10 @@
     <string>public.app-category.food-and-drink</string>
     <key>LSRequiresIPhoneOS</key>
     <true/>
+    <key>PUSH_GATEWAY_APPLICATION_ID</key>
+    <string>$(PUSH_GATEWAY_APPLICATION_ID)</string>
+    <key>PUSH_GATEWAY_URL</key>
+    <string>$(PUSH_GATEWAY_URL)</string>
     <key>UIApplicationSceneManifest</key>
     <dict>
         <key>UIApplicationSupportsMultipleScenes</key>
