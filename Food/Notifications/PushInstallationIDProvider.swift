@@ -5,25 +5,40 @@ protocol PushInstallationIDProviding: Sendable {
     func installationID() throws -> UUID
 }
 
-struct SecurityPushInstallationIDProvider: PushInstallationIDProviding {
+protocol PushInstallationIDStoring: Sendable {
+    func read(account: String) throws -> String?
+    func write(_ value: String, account: String) throws
+}
+
+struct KeychainPushInstallationIDProvider: PushInstallationIDProviding {
+    static let account = "push-gateway.installation-id"
+
+    private let store: any PushInstallationIDStoring
+
+    init(store: any PushInstallationIDStoring = SecurityPushInstallationIDStore()) {
+        self.store = store
+    }
+
+    func installationID() throws -> UUID {
+        if let stored = try store.read(account: Self.account),
+           let identifier = UUID(uuidString: stored) {
+            return identifier
+        }
+
+        let identifier = UUID()
+        try store.write(identifier.uuidString.lowercased(), account: Self.account)
+        return identifier
+    }
+}
+
+struct SecurityPushInstallationIDStore: PushInstallationIDStoring {
     private let service: String
-    private let account = "push-gateway.installation-id"
 
     init(service: String = "org.thescudders.food.push-gateway") {
         self.service = service
     }
 
-    func installationID() throws -> UUID {
-        if let stored = try read(), let identifier = UUID(uuidString: stored) {
-            return identifier
-        }
-
-        let identifier = UUID()
-        try write(identifier.uuidString.lowercased())
-        return identifier
-    }
-
-    private func read() throws -> String? {
+    func read(account: String) throws -> String? {
         var result: CFTypeRef?
         let status = SecItemCopyMatching([
             kSecClass: kSecClassGenericPassword,
@@ -48,7 +63,7 @@ struct SecurityPushInstallationIDProvider: PushInstallationIDProviding {
         return value
     }
 
-    private func write(_ value: String) throws {
+    func write(_ value: String, account: String) throws {
         let attributes: [CFString: Any] = [
             kSecValueData: Data(value.utf8),
             kSecAttrAccessible: kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly,

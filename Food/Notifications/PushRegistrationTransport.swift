@@ -24,7 +24,7 @@ protocol PushRegistrationTransport: Sendable {
     ) async throws
 }
 
-enum PushGatewayError: Error, Equatable {
+enum PushGatewayError: Error, Equatable, Sendable {
     case invalidResponse
     case httpStatus(Int)
 }

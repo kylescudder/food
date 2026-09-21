@@ -9,13 +9,13 @@ final class GatewayPushRegistrationTransportTests: XCTestCase {
     )
 
     override func tearDown() {
-        URLProtocolStub.handler = nil
+        URLProtocolStub.setHandler(nil)
         super.tearDown()
     }
 
     func testRegisterBuildsCanonicalRequestAndPreservesLeadingZeroTokenBytes() async throws {
         let recorder = RequestRecorder()
-        URLProtocolStub.handler = { request in
+        URLProtocolStub.setHandler { request in
             recorder.record(request)
             return Self.httpResponse(for: request, statusCode: 204)
         }
@@ -48,7 +48,7 @@ final class GatewayPushRegistrationTransportTests: XCTestCase {
 
     func testTrailingSlashDoesNotCreateDoubleSlash() async throws {
         let recorder = RequestRecorder()
-        URLProtocolStub.handler = { request in
+        URLProtocolStub.setHandler { request in
             recorder.record(request)
             return Self.httpResponse(for: request, statusCode: 204)
         }
@@ -68,7 +68,7 @@ final class GatewayPushRegistrationTransportTests: XCTestCase {
 
     func testUnregisterBuildsCanonicalRequestWithoutBodyOrDeviceToken() async throws {
         let recorder = RequestRecorder()
-        URLProtocolStub.handler = { request in
+        URLProtocolStub.setHandler { request in
             recorder.record(request)
             return Self.httpResponse(for: request, statusCode: 204)
         }
@@ -86,7 +86,7 @@ final class GatewayPushRegistrationTransportTests: XCTestCase {
     }
 
     func testNonSuccessStatusIsTypedFailure() async throws {
-        URLProtocolStub.handler = { request in
+        URLProtocolStub.setHandler { request in
             Self.httpResponse(for: request, statusCode: 503)
         }
 
@@ -102,7 +102,7 @@ final class GatewayPushRegistrationTransportTests: XCTestCase {
     }
 
     func testNonHTTPResponseIsTypedFailure() async throws {
-        URLProtocolStub.handler = { request in
+        URLProtocolStub.setHandler { request in
             (URLResponse(
                 url: try XCTUnwrap(request.url),
                 mimeType: nil,
@@ -163,8 +163,12 @@ private final class RequestRecorder: @unchecked Sendable {
     }
 }
 
-private final class URLProtocolStub: URLProtocol {
-    static var handler: ((URLRequest) throws -> (URLResponse, Data))?
+private final class URLProtocolStub: URLProtocol, @unchecked Sendable {
+    private static let storage = URLProtocolHandlerStorage()
+
+    static func setHandler(_ handler: URLProtocolHandlerStorage.Handler?) {
+        storage.set(handler)
+    }
 
     override class func canInit(with request: URLRequest) -> Bool {
         true
@@ -176,8 +180,7 @@ private final class URLProtocolStub: URLProtocol {
 
     override func startLoading() {
         do {
-            let handler = try XCTUnwrap(Self.handler)
-            let (response, data) = try handler(request)
+            let (response, data) = try Self.storage.response(for: request)
             client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
             client?.urlProtocol(self, didLoad: data)
             client?.urlProtocolDidFinishLoading(self)
@@ -187,4 +190,21 @@ private final class URLProtocolStub: URLProtocol {
     }
 
     override func stopLoading() {}
+}
+
+private final class URLProtocolHandlerStorage: @unchecked Sendable {
+    typealias Handler = (URLRequest) throws -> (URLResponse, Data)
+
+    private let lock = NSLock()
+    private var handler: Handler?
+
+    func set(_ handler: Handler?) {
+        lock.withLock { self.handler = handler }
+    }
+
+    func response(for request: URLRequest) throws -> (URLResponse, Data) {
+        let handler = lock.withLock { handler }
+        guard let handler else { throw URLError(.badServerResponse) }
+        return try handler(request)
+    }
 }
