@@ -4,7 +4,11 @@ import CoreData
 import Foundation
 
 final class PersistenceController: ObservableObject {
-    static let shared = PersistenceController()
+    /// UI tests launch with `-UITestInMemoryStore` so each run starts from an empty,
+    /// local-only store and never touches the user's data or iCloud.
+    static let shared = ProcessInfo.processInfo.arguments.contains("-UITestInMemoryStore")
+        ? PersistenceController(inMemory: true, cloudKitEnabled: false)
+        : PersistenceController()
     static let cloudKitContainerIdentifier = "iCloud.org.thescudders.food"
 
     enum PersistenceError: LocalizedError {

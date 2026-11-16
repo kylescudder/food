@@ -20,3 +20,4 @@ xcuserdata/
 # macOS
 .DS_Store
 
+artifacts/
