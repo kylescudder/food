@@ -1,0 +1,54 @@
+name: iOS · E2E
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: food-ios-e2e-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  e2e:
+    name: E2E tests
+    runs-on: macos-26
+    timeout-minutes: 40
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Show Xcode version
+        run: xcodebuild -version
+
+      - name: Install iOS platform (if missing)
+        run: sudo xcodebuild -downloadPlatform iOS || true
+
+      - name: Run UI journeys on a simulator
+        run: |
+          set -o pipefail
+          simulator_id="$(
+            xcrun simctl list devices available -j |
+              jq -r '[.devices[][] | select(.isAvailable and (.name | startswith("iPhone")))] | first | .udid'
+          )"
+          test -n "$simulator_id" && test "$simulator_id" != "null"
+          mkdir -p artifacts/e2e-ci
+          xcodebuild test \
+            -project Food.xcodeproj \
+            -scheme FoodUITests \
+            -configuration Debug \
+            -destination "platform=iOS Simulator,id=$simulator_id" \
+            -resultBundlePath artifacts/e2e-ci/FoodUITests.xcresult \
+            CODE_SIGNING_ALLOWED=NO 2>&1 | tee artifacts/e2e-ci/xcodebuild.log
+
+      - name: Save result bundle (screenshots, recording, log)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-e2e-evidence
+          retention-days: 7
+          path: artifacts/e2e-ci/
